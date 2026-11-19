@@ -6,8 +6,6 @@ if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_DEMO === 't
 }
 
 const nextConfig: NextConfig = {
-  cacheComponents: true,
-  partialPrefetching: true,
   turbopack: {
     rules: {
       "*.css": {
