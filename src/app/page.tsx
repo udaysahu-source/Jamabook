@@ -3,6 +3,7 @@
 
 import React, { useEffect } from 'react';
 import { useJamabook } from '@/context/JamabookContext';
+import { LoadingScreen } from '@/components/LoadingScreen';
 import { AuthScreen } from '@/components/AuthScreen';
 import { TopHeader, SidebarNav, BottomNav } from '@/components/Navbar';
 import { HomeScreen } from '@/components/HomeScreen';
@@ -15,7 +16,7 @@ import { SettingsScreen } from '@/components/SettingsScreen';
 import { KachaInvoiceSlip } from '@/components/KachaInvoiceSlip';
 
 export default function App() {
-  const { user, activeView, setActiveView } = useJamabook();
+  const { user, isLoaded, activeView, setActiveView } = useJamabook();
 
   // Desktop Mandi Keyboard Shortcuts
   useEffect(() => {
@@ -69,13 +70,18 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [user, activeView, setActiveView]);
 
+  // Loading Splash Screen until session hydration is ready
+  if (!isLoaded) {
+    return <LoadingScreen />;
+  }
+
   // Authentication Gate: Require user login/signup before accessing trader data
   if (!user) {
     return <AuthScreen />;
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F5EE] text-[#19221E] flex flex-col lg:flex-row font-sans selection:bg-[#184E3A] selection:text-white">
+    <div className="min-h-screen bg-[#F8F5EE] dark:bg-[#101613] text-[#19221E] dark:text-[#F0F4F2] flex flex-col lg:flex-row font-sans selection:bg-[#184E3A] selection:text-white transition-colors duration-200">
       {/* Desktop Sidebar Navigation */}
       <SidebarNav />
 

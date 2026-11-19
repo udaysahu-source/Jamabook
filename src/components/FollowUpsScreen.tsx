@@ -105,14 +105,14 @@ export function FollowUpsScreen() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-black uppercase tracking-wider text-[#C25E1A] bg-[#FCEFE7] px-2.5 py-0.5 rounded-full">
+            <span className="text-xs font-black uppercase tracking-wider text-[#C25E1A] dark:text-[#E06D24] bg-[#FCEFE7] dark:bg-[#2D1B11] px-2.5 py-0.5 rounded-full">
               Khata &amp; Buyer Inquiries
             </span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#19221E] tracking-tight mt-1">
+          <h2 className="text-2xl sm:text-3xl font-black text-[#19221E] dark:text-[#F0F4F2] tracking-tight mt-1">
             {t.followUps} · {t.followUpsHindi}
           </h2>
-          <p className="text-xs sm:text-sm font-semibold text-[#56645E] mt-0.5">
+          <p className="text-xs sm:text-sm font-semibold text-[#56645E] dark:text-[#8E9F97] mt-0.5">
             WhatsApp buyer follow-ups, price inquiries, and payment reminders
           </p>
         </div>
@@ -128,13 +128,13 @@ export function FollowUpsScreen() {
 
       {/* 2. Filter Bar: Segmented Tabs & Search */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="grid grid-cols-3 gap-1 bg-[#F1EBE1] p-1 rounded-2xl w-full sm:w-auto">
+        <div className="grid grid-cols-3 gap-1 bg-[#F1EBE1] dark:bg-[#131B17] p-1 rounded-2xl w-full sm:w-auto">
           <button
             onClick={() => setActiveTab('today')}
             className={`py-2 px-4 text-xs font-black rounded-xl transition-all ${
               activeTab === 'today'
-                ? 'bg-[#184E3A] text-white shadow-xs'
-                : 'text-[#56645E] hover:text-[#19221E]'
+                ? 'bg-[#184E3A] dark:bg-[#226E52] text-white shadow-xs'
+                : 'text-[#56645E] dark:text-[#8E9F97] hover:text-[#19221E] dark:hover:text-[#F0F4F2]'
             }`}
           >
             {t.today} ({todayEnquiries.length})
@@ -144,8 +144,8 @@ export function FollowUpsScreen() {
             onClick={() => setActiveTab('upcoming')}
             className={`py-2 px-4 text-xs font-black rounded-xl transition-all ${
               activeTab === 'upcoming'
-                ? 'bg-[#184E3A] text-white shadow-xs'
-                : 'text-[#56645E] hover:text-[#19221E]'
+                ? 'bg-[#184E3A] dark:bg-[#226E52] text-white shadow-xs'
+                : 'text-[#56645E] dark:text-[#8E9F97] hover:text-[#19221E] dark:hover:text-[#F0F4F2]'
             }`}
           >
             {t.upcoming} ({upcomingEnquiries.length})
@@ -155,8 +155,8 @@ export function FollowUpsScreen() {
             onClick={() => setActiveTab('done')}
             className={`py-2 px-4 text-xs font-black rounded-xl transition-all ${
               activeTab === 'done'
-                ? 'bg-[#184E3A] text-white shadow-xs'
-                : 'text-[#56645E] hover:text-[#19221E]'
+                ? 'bg-[#184E3A] dark:bg-[#226E52] text-white shadow-xs'
+                : 'text-[#56645E] dark:text-[#8E9F97] hover:text-[#19221E] dark:hover:text-[#F0F4F2]'
             }`}
           >
             {t.done} ({doneEnquiries.length})
@@ -165,13 +165,13 @@ export function FollowUpsScreen() {
 
         {/* Quick Search */}
         <div className="relative w-full sm:w-64">
-          <Search className="w-4 h-4 text-[#7A8881] absolute left-3 top-3" />
+          <Search className="w-4 h-4 text-[#7A8881] dark:text-[#8E9F97] absolute left-3 top-3" />
           <input
             type="text"
             placeholder="Search buyer or item..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white border border-[#E5DFD1] rounded-2xl pl-9 pr-3 py-2 text-xs font-bold focus:outline-none focus:border-[#184E3A]"
+            className="w-full bg-white dark:bg-[#18221D] border border-[#E5DFD1] dark:border-[#27362E] text-[#19221E] dark:text-[#F0F4F2] rounded-2xl pl-9 pr-3 py-2 text-xs font-bold focus:outline-none focus:border-[#184E3A]"
           />
         </div>
       </div>
@@ -181,15 +181,15 @@ export function FollowUpsScreen() {
         {/* ================= LEFT MAIN: ENQUIRY LIST (Col 7 on Desktop) ================= */}
         <div className="lg:col-span-7 space-y-3.5">
           {currentList.length === 0 ? (
-            <div className="bg-white p-8 rounded-3xl border border-[#E5DFD1] text-center space-y-2 shadow-xs">
-              <p className="text-sm font-bold text-[#19221E]">
+            <div className="bg-white dark:bg-[#18221D] p-8 rounded-3xl border border-[#E5DFD1] dark:border-[#27362E] text-center space-y-2 shadow-xs">
+              <p className="text-sm font-bold text-[#19221E] dark:text-[#F0F4F2]">
                 {activeTab === 'today'
                   ? 'No follow-ups due today!'
                   : activeTab === 'upcoming'
                   ? 'No upcoming inquiries scheduled.'
                   : 'No completed inquiries yet.'}
               </p>
-              <p className="text-xs text-[#56645E]">
+              <p className="text-xs text-[#56645E] dark:text-[#8E9F97]">
                 Tap &quot;+ Log Buyer Enquiry&quot; above to add buyers who called or messaged you on WhatsApp.
               </p>
             </div>
@@ -206,31 +206,31 @@ export function FollowUpsScreen() {
                 <div
                   key={enq.id}
                   onClick={() => setSelectedEnquiryId(enq.id)}
-                  className={`bg-white p-4 sm:p-5 rounded-3xl border transition-all cursor-pointer shadow-xs space-y-3 relative ${
+                  className={`p-4 sm:p-5 rounded-3xl border transition-all cursor-pointer shadow-xs space-y-3 relative ${
                     isSelected
-                      ? 'border-[#C25E1A] ring-2 ring-[#C25E1A]/20 bg-[#FDFAF4]'
-                      : 'border-[#E5DFD1] hover:border-[#D0C6B4]'
+                      ? 'border-[#C25E1A] dark:border-[#E06D24] ring-2 ring-[#C25E1A]/20 dark:ring-[#E06D24]/20 bg-[#FDFAF4] dark:bg-[#201812]'
+                      : 'bg-white dark:bg-[#18221D] border-[#E5DFD1] dark:border-[#27362E] hover:border-[#D0C6B4] dark:hover:border-[#384C41]'
                   }`}
                 >
                   {/* Top Row: Buyer Name & Urgency Badge */}
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-black text-base text-[#19221E] leading-tight">
+                        <h3 className="font-black text-base text-[#19221E] dark:text-[#F0F4F2] leading-tight">
                           {enq.contact_name}
                         </h3>
                         {isSelected && (
-                          <span className="hidden sm:inline-block w-2 h-2 rounded-full bg-[#C25E1A]" />
+                          <span className="hidden sm:inline-block w-2 h-2 rounded-full bg-[#C25E1A] dark:bg-[#E06D24]" />
                         )}
                       </div>
-                      <p className="text-xs font-bold text-[#19221E] mt-1">
-                        Inquiry: <span className="font-extrabold text-[#184E3A]">{item?.name || 'Item'}</span> ·{' '}
+                      <p className="text-xs font-bold text-[#19221E] dark:text-[#F0F4F2] mt-1">
+                        Inquiry: <span className="font-extrabold text-[#184E3A] dark:text-emerald-400">{item?.name || 'Item'}</span> ·{' '}
                         {piecesWanted} bags
                       </p>
                     </div>
 
                     {isLate && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#C25E1A] text-white text-[11px] font-extrabold tracking-wide shrink-0">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#C25E1A] dark:bg-[#E06D24] text-white text-[11px] font-extrabold tracking-wide shrink-0">
                         1 day late
                       </span>
                     )}
@@ -361,27 +361,27 @@ export function FollowUpsScreen() {
         <div className="lg:col-span-5 space-y-4 sticky top-6">
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-2">
-              <MessageCircle className="w-4 h-4 text-[#184E3A]" />
-              <h4 className="font-extrabold text-sm text-[#19221E] uppercase tracking-wider">
+              <MessageCircle className="w-4 h-4 text-[#184E3A] dark:text-emerald-400" />
+              <h4 className="font-extrabold text-sm text-[#19221E] dark:text-[#F0F4F2] uppercase tracking-wider">
                 Mandi Message Templates
               </h4>
             </div>
-            <span className="text-[11px] font-bold text-[#184E3A] bg-[#E7EFE9] px-2 py-0.5 rounded-full">
+            <span className="text-[11px] font-bold text-[#184E3A] dark:text-emerald-400 bg-[#E7EFE9] dark:bg-[#1A3428] px-2 py-0.5 rounded-full">
               1-Click Send
             </span>
           </div>
 
           {activeEnquiry ? (
-            <div className="bg-white p-5 rounded-3xl border border-[#E5DFD1] shadow-xs space-y-4">
-              <div className="flex justify-between items-start pb-3 border-b border-[#F2ECE1]">
+            <div className="bg-white dark:bg-[#18221D] p-5 rounded-3xl border border-[#E5DFD1] dark:border-[#27362E] shadow-xs space-y-4">
+              <div className="flex justify-between items-start pb-3 border-b border-[#F2ECE1] dark:border-[#27362E]">
                 <div>
-                  <h4 className="font-black text-base text-[#19221E]">{activeEnquiry.contact_name}</h4>
-                  <p className="text-xs text-[#56645E]">Ph: {activeEnquiry.phone || 'No phone'}</p>
+                  <h4 className="font-black text-base text-[#19221E] dark:text-[#F0F4F2]">{activeEnquiry.contact_name}</h4>
+                  <p className="text-xs text-[#56645E] dark:text-[#8E9F97]">Ph: {activeEnquiry.phone || 'No phone'}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setActiveView('bill-new')}
-                  className="px-3 py-1.5 bg-[#184E3A] text-white rounded-xl text-xs font-black hover:bg-[#123E2E]"
+                  className="px-3 py-1.5 bg-[#184E3A] dark:bg-[#226E52] text-white rounded-xl text-xs font-black hover:bg-[#123E2E] dark:hover:bg-[#1A5741]"
                 >
                   Convert to Bill
                 </button>
@@ -389,7 +389,7 @@ export function FollowUpsScreen() {
 
               {/* Template Options */}
               <div className="space-y-2.5">
-                <p className="text-xs font-bold text-[#56645E]">Select WhatsApp message template:</p>
+                <p className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97]">Select WhatsApp message template:</p>
 
                 {/* Template 1: Stock Ready */}
                 <div
@@ -400,13 +400,13 @@ export function FollowUpsScreen() {
                       `नमस्ते ${activeEnquiry.contact_name} जी,\nआपके द्वारा पूछे गए ${activeEnquiry.pieces_wanted} बोरी ${item?.name || 'माल'} का स्टॉक उपलब्ध है। आज का भाव ₹${formatIndianNumber(item?.default_rate || 0)}/${item?.rate_unit === 'per_quintal' ? 'क्विंटल' : 'बोरी'} है। क्या आज गाड़ी लोड करवा दें? - ${business.name}`
                     );
                   }}
-                  className="p-3 rounded-2xl bg-[#F9F6F0] hover:bg-[#F0ECE1] border border-[#E5DFD1] cursor-pointer transition-colors space-y-1"
+                  className="p-3 rounded-2xl bg-[#F9F6F0] dark:bg-[#131B17] hover:bg-[#F0ECE1] dark:hover:bg-[#19241F] border border-[#E5DFD1] dark:border-[#27362E] cursor-pointer transition-colors space-y-1"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-black text-[#184E3A]">1. स्टॉक उपलब्ध व भाव कन्फर्मेशन</span>
-                    <Send className="w-3.5 h-3.5 text-[#184E3A]" />
+                    <span className="text-xs font-black text-[#184E3A] dark:text-emerald-400">1. स्टॉक उपलब्ध व भाव कन्फर्मेशन</span>
+                    <Send className="w-3.5 h-3.5 text-[#184E3A] dark:text-emerald-400" />
                   </div>
-                  <p className="text-[11px] text-[#56645E] line-clamp-2">
+                  <p className="text-[11px] text-[#56645E] dark:text-[#8E9F97] line-clamp-2">
                     नमस्ते ji, आपके द्वारा पूछे गए माल का स्टॉक उपलब्ध है। आज का भाव...
                   </p>
                 </div>
@@ -419,13 +419,13 @@ export function FollowUpsScreen() {
                       `नमस्ते ${activeEnquiry.contact_name} जी,\n${business.name} से विनती है कि पुराने बिल का बकाया भुगतान आज करवा दें ताकि अगली गाड़ी बिना रुकावट भेजी जा सके। खाता विवरण: ${business.bank_name || 'SBI'} A/c ${business.bank_account || '39981029482'}। धन्यवाद!`
                     );
                   }}
-                  className="p-3 rounded-2xl bg-[#F9F6F0] hover:bg-[#F0ECE1] border border-[#E5DFD1] cursor-pointer transition-colors space-y-1"
+                  className="p-3 rounded-2xl bg-[#F9F6F0] dark:bg-[#131B17] hover:bg-[#F0ECE1] dark:hover:bg-[#19241F] border border-[#E5DFD1] dark:border-[#27362E] cursor-pointer transition-colors space-y-1"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-black text-[#C25E1A]">2. खाता तगादा व भुगतान स्मरण</span>
-                    <Send className="w-3.5 h-3.5 text-[#C25E1A]" />
+                    <span className="text-xs font-black text-[#C25E1A] dark:text-[#E06D24]">2. खाता तगादा व भुगतान स्मरण</span>
+                    <Send className="w-3.5 h-3.5 text-[#C25E1A] dark:text-[#E06D24]" />
                   </div>
-                  <p className="text-[11px] text-[#56645E] line-clamp-2">
+                  <p className="text-[11px] text-[#56645E] dark:text-[#8E9F97] line-clamp-2">
                     पुराने बिल का बकाया भुगतान आज करवा दें ताकि अगली गाड़ी बिना रुकावट भेजी जा सके...
                   </p>
                 </div>
@@ -435,14 +435,14 @@ export function FollowUpsScreen() {
               <button
                 type="button"
                 onClick={() => handleWhatsApp(activeEnquiry)}
-                className="w-full py-3 bg-[#184E3A] hover:bg-[#123E2E] text-white rounded-2xl font-black text-xs flex items-center justify-center gap-2 shadow-xs transition-colors"
+                className="w-full py-3 bg-[#184E3A] hover:bg-[#123E2E] dark:bg-[#226E52] dark:hover:bg-[#1A5741] text-white rounded-2xl font-black text-xs flex items-center justify-center gap-2 shadow-xs transition-colors"
               >
                 <MessageCircle className="w-4 h-4 fill-current" />
                 <span>Open in WhatsApp</span>
               </button>
             </div>
           ) : (
-            <div className="bg-white p-6 rounded-3xl border border-[#E5DFD1] text-center text-xs text-[#56645E]">
+            <div className="bg-white dark:bg-[#18221D] p-6 rounded-3xl border border-[#E5DFD1] dark:border-[#27362E] text-center text-xs text-[#56645E] dark:text-[#8E9F97]">
               Select an inquiry on the left to see WhatsApp templates.
             </div>
           )}

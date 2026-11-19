@@ -1,6 +1,8 @@
 /* src/app/globals.css */
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --bg-mandi: #F8F5EE;
@@ -15,13 +17,32 @@
     --clay-light: #FCEFE7;
   }
 
+  .dark {
+    --bg-mandi: #101613;
+    --card-surface: #18221D;
+    --border-mandi: #27362E;
+    --text-primary: #F0F4F2;
+    --text-muted: #8E9F97;
+    --green-primary: #226E52;
+    --green-hover: #2E8B68;
+    --green-light: #1A3428;
+    --clay-accent: #E06D24;
+    --clay-light: #362215;
+  }
+
   body {
     background-color: var(--bg-mandi);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
 }
 
 /* Custom scrollbar for mobile feel */

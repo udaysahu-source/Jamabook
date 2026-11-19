@@ -50,8 +50,14 @@ export type AppView =
   | 'settings'
   | 'invoice-view';
 
+export type ThemeMode = 'light' | 'dark';
+
 interface JamabookContextType {
   user: AppUser | null;
+  isLoaded: boolean;
+  theme: ThemeMode;
+  toggleTheme: () => void;
+  setTheme: (mode: ThemeMode) => void;
   language: LanguageMode;
   toggleLanguage: () => void;
   activeView: AppView;
@@ -142,11 +148,25 @@ export function JamabookProvider({ children }: { children: React.ReactNode }) {
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [lastSavedInvoice, setLastSavedInvoice] = useState<Invoice | null>(null);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [theme, setTheme] = useState<ThemeMode>('light');
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Load user session and stored ledger data
   useEffect(() => {
     try {
+      const savedTheme = localStorage.getItem('jamabook_theme') as ThemeMode | null;
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        setTheme(savedTheme);
+        if (savedTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } else if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setTheme('dark');
+        document.documentElement.classList.add('dark');
+      }
+
       const savedAuth = localStorage.getItem(AUTH_KEY);
       if (savedAuth) {
         const parsedAuth = JSON.parse(savedAuth);
@@ -229,6 +249,21 @@ export function JamabookProvider({ children }: { children: React.ReactNode }) {
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === 'en' ? 'hi' : 'en'));
+  };
+
+  const toggleTheme = () => {
+    setTheme((prev) => {
+      const nextTheme = prev === 'light' ? 'dark' : 'light';
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('jamabook_theme', nextTheme);
+        if (nextTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+      return nextTheme;
+    });
   };
 
   // Populate realistic Indian Mandi demo data for live preview & Tally ledger
@@ -758,6 +793,10 @@ export function JamabookProvider({ children }: { children: React.ReactNode }) {
     <JamabookContext.Provider
       value={{
         user,
+        isLoaded,
+        theme,
+        toggleTheme,
+        setTheme,
         language,
         toggleLanguage,
         activeView,

@@ -812,13 +812,13 @@ export function NewBillScreen() {
       </div>
 
       {/* Mobile Sticky Bottom Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E5DFD1] px-4 py-3 shadow-lg lg:hidden no-print">
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#131B17]/95 backdrop-blur-md border-t border-[#E5DFD1] dark:border-[#27362E] px-4 py-3 shadow-lg lg:hidden no-print transition-colors duration-200">
         <div className="max-w-md mx-auto flex items-center justify-between gap-4">
           <div>
-            <span className="text-[10px] font-black uppercase text-[#56645E] block">
+            <span className="text-[10px] font-black uppercase text-[#56645E] dark:text-[#8E9F97] block">
               {t.total}
             </span>
-            <span className="text-2xl font-black font-mono text-[#19221E] tracking-tight">
+            <span className="text-2xl font-black font-mono text-[#19221E] dark:text-[#F0F4F2] tracking-tight">
               {formatCurrency(grandTotal)}
             </span>
           </div>
@@ -826,7 +826,7 @@ export function NewBillScreen() {
           <button
             onClick={handleSaveBill}
             disabled={isSaving}
-            className="flex-1 max-w-[200px] bg-[#184E3A] hover:bg-[#123E2E] active:scale-[0.98] disabled:opacity-50 text-white py-3.5 px-5 rounded-2xl font-black text-sm tracking-wide shadow-sm flex items-center justify-center gap-1.5 transition-all min-h-[48px]"
+            className="flex-1 max-w-[200px] bg-[#184E3A] hover:bg-[#123E2E] dark:bg-[#226E52] dark:hover:bg-[#1A5741] active:scale-[0.98] disabled:opacity-50 text-white py-3.5 px-5 rounded-2xl font-black text-sm tracking-wide shadow-sm flex items-center justify-center gap-1.5 transition-all min-h-[48px]"
           >
             {isSaving ? (
               <>
@@ -845,14 +845,14 @@ export function NewBillScreen() {
 
       {/* New Buyer Quick Modal */}
       {showNewBuyerModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-xl animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#18221D] rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-xl border border-[#E5DFD1] dark:border-[#27362E] animate-in zoom-in-95">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-black text-[#19221E]">Add New Buyer</h3>
+              <h3 className="text-lg font-black text-[#19221E] dark:text-[#F0F4F2]">Add New Buyer</h3>
               <button
                 type="button"
                 onClick={() => setShowNewBuyerModal(false)}
-                className="w-8 h-8 rounded-full bg-[#F3EFE6] text-[#56645E] flex items-center justify-center"
+                className="w-8 h-8 rounded-full bg-[#F3EFE6] dark:bg-[#233129] text-[#56645E] dark:text-[#8E9F97] flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -860,35 +860,35 @@ export function NewBillScreen() {
 
             <div className="space-y-3.5">
               <div>
-                <label className="text-xs font-bold text-[#56645E] block mb-1">Party / Buyer Name *</label>
+                <label className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97] block mb-1">Party / Buyer Name *</label>
                 <input
                   type="text"
                   placeholder="e.g. Balaji Traders"
                   value={newBuyerName}
                   onChange={(e) => setNewBuyerName(e.target.value)}
-                  className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl p-2.5 text-sm font-bold focus:outline-none focus:border-[#184E3A]"
+                  className="w-full bg-[#F9F6F0] dark:bg-[#131B17] border border-[#D9D2C3] dark:border-[#27362E] rounded-2xl p-2.5 text-sm font-bold text-[#19221E] dark:text-[#F0F4F2] focus:outline-none focus:border-[#184E3A]"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#56645E] block mb-1">Town / Mandi</label>
+                <label className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97] block mb-1">Town / Mandi</label>
                 <input
                   type="text"
                   placeholder="e.g. Warangal"
                   value={newBuyerTown}
                   onChange={(e) => setNewBuyerTown(e.target.value)}
-                  className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl p-2.5 text-sm font-bold focus:outline-none focus:border-[#184E3A]"
+                  className="w-full bg-[#F9F6F0] dark:bg-[#131B17] border border-[#D9D2C3] dark:border-[#27362E] rounded-2xl p-2.5 text-sm font-bold text-[#19221E] dark:text-[#F0F4F2] focus:outline-none focus:border-[#184E3A]"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#56645E] block mb-1">WhatsApp / Phone</label>
+                <label className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97] block mb-1">WhatsApp / Phone</label>
                 <input
                   type="tel"
                   placeholder="+91 98000 00000"
                   value={newBuyerPhone}
                   onChange={(e) => setNewBuyerPhone(e.target.value)}
-                  className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl p-2.5 text-sm font-bold focus:outline-none focus:border-[#184E3A]"
+                  className="w-full bg-[#F9F6F0] dark:bg-[#131B17] border border-[#D9D2C3] dark:border-[#27362E] rounded-2xl p-2.5 text-sm font-bold text-[#19221E] dark:text-[#F0F4F2] focus:outline-none focus:border-[#184E3A]"
                 />
               </div>
             </div>
@@ -897,7 +897,7 @@ export function NewBillScreen() {
               <button
                 type="button"
                 onClick={() => setShowNewBuyerModal(false)}
-                className="flex-1 py-3 rounded-2xl font-bold text-sm bg-[#F3EFE6] text-[#56645E]"
+                className="flex-1 py-3 rounded-2xl font-bold text-sm bg-[#F3EFE6] dark:bg-[#233129] text-[#56645E] dark:text-[#8E9F97]"
               >
                 Cancel
               </button>
@@ -905,7 +905,7 @@ export function NewBillScreen() {
                 type="button"
                 onClick={handleCreateNewBuyer}
                 disabled={!newBuyerName.trim()}
-                className="flex-1 py-3 rounded-2xl font-black text-sm bg-[#184E3A] text-white disabled:opacity-50"
+                className="flex-1 py-3 rounded-2xl font-black text-sm bg-[#184E3A] dark:bg-[#226E52] text-white disabled:opacity-50"
               >
                 Save Buyer
               </button>

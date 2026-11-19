@@ -136,23 +136,23 @@ export function HomeScreen() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-black uppercase tracking-wider text-[#C25E1A] bg-[#FCEFE7] px-2 py-0.5 rounded-full">
+                <span className="text-xs font-black uppercase tracking-wider text-[#C25E1A] dark:text-[#E06D24] bg-[#FCEFE7] dark:bg-[#2D1B11] px-2 py-0.5 rounded-full">
                   Mandi Trading Desk
                 </span>
-                <span className="text-xs text-[#56645E] font-medium hidden sm:inline">·</span>
-                <span className="text-xs text-[#56645E] font-semibold hidden sm:inline">
+                <span className="text-xs text-[#56645E] dark:text-[#8E9F97] font-medium hidden sm:inline">·</span>
+                <span className="text-xs text-[#56645E] dark:text-[#8E9F97] font-semibold hidden sm:inline">
                   {business.name || 'RTC Mandi'}
                 </span>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-black text-[#19221E] tracking-tight mt-1">
+              <h2 className="text-3xl sm:text-4xl font-black text-[#19221E] dark:text-[#F0F4F2] tracking-tight mt-1">
                 {t.namaste}
               </h2>
-              <p className="text-sm font-semibold text-[#56645E] capitalize mt-0.5">
+              <p className="text-sm font-semibold text-[#56645E] dark:text-[#8E9F97] capitalize mt-0.5">
                 {todayDisplay}
               </p>
             </div>
 
-            <div className="hidden sm:flex items-center gap-2 bg-white px-3 py-1.5 rounded-2xl border border-[#E5DFD1] text-xs font-bold text-[#19221E] self-start sm:self-auto shadow-2xs">
+            <div className="hidden sm:flex items-center gap-2 bg-white dark:bg-[#18221D] px-3 py-1.5 rounded-2xl border border-[#E5DFD1] dark:border-[#27362E] text-xs font-bold text-[#19221E] dark:text-[#F0F4F2] self-start sm:self-auto shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Bill Series #{business.bill_prefix || 'RTC'}-{business.next_bill_no}</span>
             </div>
@@ -161,7 +161,7 @@ export function HomeScreen() {
           {/* Hero Action Card: New Bill (Bolder & High Impact) */}
           <button
             onClick={() => setActiveView('bill-new')}
-            className="w-full text-left bg-gradient-to-br from-[#184E3A] via-[#123E2E] to-[#0A241A] text-white p-6 sm:p-7 rounded-3xl shadow-md hover:shadow-xl transition-all transform active:scale-[0.99] group relative overflow-hidden ring-1 ring-black/5"
+            className="w-full text-left bg-gradient-to-br from-[#184E3A] via-[#123E2E] to-[#0A241A] dark:from-[#226E52] dark:via-[#19523D] dark:to-[#0F3527] text-white p-6 sm:p-7 rounded-3xl shadow-md hover:shadow-xl transition-all transform active:scale-[0.99] group relative overflow-hidden ring-1 ring-black/5"
           >
             {/* Subtle decorative grain background element */}
             <div className="absolute right-0 top-0 -mr-8 -mt-8 w-48 h-48 rounded-full bg-white/5 blur-2xl pointer-events-none" />
@@ -203,31 +203,31 @@ export function HomeScreen() {
             {/* Stock Card */}
             <button
               onClick={() => setActiveView('stock')}
-              className="text-left bg-white p-4 sm:p-5 rounded-3xl border border-[#E5DFD1] hover:border-[#C8BFAC] hover:shadow-sm transition-all active:scale-[0.98] shadow-xs group"
+              className="text-left bg-white dark:bg-[#18221D] p-4 sm:p-5 rounded-3xl border border-[#E5DFD1] dark:border-[#27362E] hover:border-[#C8BFAC] dark:hover:border-[#3A4E43] hover:shadow-sm transition-all active:scale-[0.98] shadow-xs group"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-black uppercase tracking-wider text-[#56645E]">
+                <span className="text-xs font-black uppercase tracking-wider text-[#56645E] dark:text-[#8E9F97]">
                   {t.stock} · {t.stockHindi}
                 </span>
-                <Package className="w-4 h-4 text-[#184E3A] group-hover:scale-110 transition-transform" />
+                <Package className="w-4 h-4 text-[#184E3A] dark:text-emerald-400 group-hover:scale-110 transition-transform" />
               </div>
 
               <div className="mt-3 flex items-baseline gap-1.5">
-                <span className="text-3xl sm:text-4xl font-black font-mono text-[#19221E] tracking-tight">
+                <span className="text-3xl sm:text-4xl font-black font-mono text-[#19221E] dark:text-[#F0F4F2] tracking-tight">
                   {formatIndianNumber(totalStockPieces)}
                 </span>
-                <span className="text-xs font-extrabold text-[#56645E]">{t.pcs}</span>
+                <span className="text-xs font-extrabold text-[#56645E] dark:text-[#8E9F97]">{t.pcs}</span>
               </div>
 
-              <div className="mt-2.5 flex items-center justify-between text-xs font-semibold text-[#56645E] pt-2 border-t border-[#F2ECE1]">
+              <div className="mt-2.5 flex items-center justify-between text-xs font-semibold text-[#56645E] dark:text-[#8E9F97] pt-2 border-t border-[#F2ECE1] dark:border-[#27362E]">
                 <span>{totalStockQuintals} Qtl</span>
                 {lowStockCount > 0 ? (
-                  <span className="text-[#C25E1A] font-extrabold flex items-center gap-1">
+                  <span className="text-[#C25E1A] dark:text-[#E06D24] font-extrabold flex items-center gap-1">
                     <BadgeAlert className="w-3.5 h-3.5" />
                     {lowStockCount} {t.lowStock}
                   </span>
                 ) : (
-                  <span className="text-emerald-700 font-bold">In Stock</span>
+                  <span className="text-emerald-700 dark:text-emerald-400 font-bold">In Stock</span>
                 )}
               </div>
             </button>
@@ -235,64 +235,64 @@ export function HomeScreen() {
             {/* Follow-ups Card */}
             <button
               onClick={() => setActiveView('follow-ups')}
-              className="text-left bg-[#FCF8EE] p-4 sm:p-5 rounded-3xl border border-[#EADBCA] hover:border-[#D0B99B] hover:shadow-sm transition-all active:scale-[0.98] shadow-xs group"
+              className="text-left bg-[#FCF8EE] dark:bg-[#201812] p-4 sm:p-5 rounded-3xl border border-[#EADBCA] dark:border-[#3D291A] hover:border-[#D0B99B] hover:shadow-sm transition-all active:scale-[0.98] shadow-xs group"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-black uppercase tracking-wider text-[#8C3D0E]">
+                <span className="text-xs font-black uppercase tracking-wider text-[#8C3D0E] dark:text-[#E06D24]">
                   {t.followUps} · {t.followUpsHindi}
                 </span>
-                <span className="w-2.5 h-2.5 rounded-full bg-[#C25E1A] animate-ping" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#C25E1A] dark:bg-[#E06D24] animate-ping" />
               </div>
 
               <div className="mt-3 flex items-baseline gap-1.5">
-                <span className="text-3xl sm:text-4xl font-black font-mono text-[#C25E1A] tracking-tight">
+                <span className="text-3xl sm:text-4xl font-black font-mono text-[#C25E1A] dark:text-[#E06D24] tracking-tight">
                   {dueTodayEnquiries.length}
                 </span>
-                <span className="text-xs font-extrabold text-[#C25E1A]">{t.dueToday}</span>
+                <span className="text-xs font-extrabold text-[#C25E1A] dark:text-[#E06D24]">{t.dueToday}</span>
               </div>
 
-              <div className="mt-2.5 flex items-center justify-between text-xs font-semibold text-[#8C3D0E] pt-2 border-t border-[#EADBCA]/60">
+              <div className="mt-2.5 flex items-center justify-between text-xs font-semibold text-[#8C3D0E] dark:text-[#E06D24] pt-2 border-t border-[#EADBCA]/60 dark:border-[#3D291A]">
                 <span>{overdueCount > 0 ? `${overdueCount} Overdue` : 'All Caught Up'}</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </button>
 
             {/* Today's Mandi Sales Card */}
-            <div className="bg-white p-4 sm:p-5 rounded-3xl border border-[#E5DFD1] shadow-xs">
+            <div className="bg-white dark:bg-[#18221D] p-4 sm:p-5 rounded-3xl border border-[#E5DFD1] dark:border-[#27362E] shadow-xs">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-black uppercase tracking-wider text-[#56645E]">
+                <span className="text-xs font-black uppercase tracking-wider text-[#56645E] dark:text-[#8E9F97]">
                   Today&apos;s Billed
                 </span>
-                <TrendingUp className="w-4 h-4 text-[#184E3A]" />
+                <TrendingUp className="w-4 h-4 text-[#184E3A] dark:text-emerald-400" />
               </div>
 
               <div className="mt-3 flex items-baseline gap-1">
-                <span className="text-2xl sm:text-3xl font-black font-mono text-[#184E3A] tracking-tight">
+                <span className="text-2xl sm:text-3xl font-black font-mono text-[#184E3A] dark:text-emerald-400 tracking-tight">
                   {formatCurrency(todayTotalSales)}
                 </span>
               </div>
 
-              <div className="mt-2.5 flex items-center justify-between text-xs font-semibold text-[#56645E] pt-2 border-t border-[#F2ECE1]">
+              <div className="mt-2.5 flex items-center justify-between text-xs font-semibold text-[#56645E] dark:text-[#8E9F97] pt-2 border-t border-[#F2ECE1] dark:border-[#27362E]">
                 <span>{todayInvoices.length} Bills Today</span>
-                <span className="text-emerald-700 font-bold">Active</span>
+                <span className="text-emerald-700 dark:text-emerald-400 font-bold">Active</span>
               </div>
             </div>
           </div>
 
           {/* Mandi Commodity Rates Quick Board */}
-          <div className="bg-white rounded-3xl border border-[#E5DFD1] p-5 shadow-xs">
-            <div className="flex items-center justify-between pb-3 border-b border-[#F2ECE1]">
+          <div className="bg-white dark:bg-[#18221D] rounded-3xl border border-[#E5DFD1] dark:border-[#27362E] p-5 shadow-xs">
+            <div className="flex items-center justify-between pb-3 border-b border-[#F2ECE1] dark:border-[#27362E]">
               <div>
-                <h4 className="font-extrabold text-sm text-[#19221E] uppercase tracking-wider">
+                <h4 className="font-extrabold text-sm text-[#19221E] dark:text-[#F0F4F2] uppercase tracking-wider">
                   Live Mandi Commodities &amp; Rates
                 </h4>
-                <p className="text-xs text-[#56645E]">
+                <p className="text-xs text-[#56645E] dark:text-[#8E9F97]">
                   {language === 'hi' ? 'वर्तमान भाव व उपलब्ध बोरी' : 'Current rates & stock in warehouse'}
                 </p>
               </div>
               <button
                 onClick={() => setActiveView('stock')}
-                className="text-xs font-extrabold text-[#184E3A] hover:underline"
+                className="text-xs font-extrabold text-[#184E3A] dark:text-emerald-400 hover:underline"
               >
                 {t.seeAll} ({items.length})
               </button>
@@ -302,21 +302,21 @@ export function HomeScreen() {
               {items.slice(0, 4).map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between p-3 rounded-2xl bg-[#F9F6F0] border border-[#E5DFD1]/80 hover:bg-[#F2EDE1] transition-colors"
+                  className="flex items-center justify-between p-3 rounded-2xl bg-[#F9F6F0] dark:bg-[#131B17] border border-[#E5DFD1]/80 dark:border-[#27362E] hover:bg-[#F2EDE1] dark:hover:bg-[#19241F] transition-colors"
                 >
                   <div>
-                    <h5 className="font-extrabold text-xs text-[#19221E] truncate">{item.name}</h5>
-                    <span className="text-[11px] font-medium text-[#56645E]">
+                    <h5 className="font-extrabold text-xs text-[#19221E] dark:text-[#F0F4F2] truncate">{item.name}</h5>
+                    <span className="text-[11px] font-medium text-[#56645E] dark:text-[#8E9F97]">
                       {item.kg_per_piece} kg bag ·{' '}
-                      <span className="font-bold text-[#19221E]">{item.pieces_in_stock} pcs</span>
+                      <span className="font-bold text-[#19221E] dark:text-[#F0F4F2]">{item.pieces_in_stock} pcs</span>
                     </span>
                   </div>
 
                   <div className="text-right">
-                    <span className="text-xs font-black font-mono text-[#184E3A] block">
+                    <span className="text-xs font-black font-mono text-[#184E3A] dark:text-emerald-400 block">
                       ₹{formatIndianNumber(item.default_rate || 0)}
                     </span>
-                    <span className="text-[10px] font-semibold text-[#56645E]">
+                    <span className="text-[10px] font-semibold text-[#56645E] dark:text-[#8E9F97]">
                       {item.rate_unit === 'per_quintal' ? '/ Qtl' : item.rate_unit === 'per_kg' ? '/ Kg' : '/ Bag'}
                     </span>
                   </div>
@@ -332,16 +332,16 @@ export function HomeScreen() {
           <div className="space-y-3">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-extrabold text-base text-[#19221E] tracking-tight">
+                <h4 className="font-extrabold text-base text-[#19221E] dark:text-[#F0F4F2] tracking-tight">
                   {t.callOrMessageToday}
                 </h4>
-                <span className="w-5 h-5 rounded-full bg-[#C25E1A] text-white text-[11px] font-black flex items-center justify-center">
+                <span className="w-5 h-5 rounded-full bg-[#C25E1A] dark:bg-[#E06D24] text-white text-[11px] font-black flex items-center justify-center">
                   {dueTodayEnquiries.length}
                 </span>
               </div>
               <button
                 onClick={() => setActiveView('follow-ups')}
-                className="text-xs font-extrabold text-[#184E3A] hover:underline"
+                className="text-xs font-extrabold text-[#184E3A] dark:text-emerald-400 hover:underline"
               >
                 {t.seeAll}
               </button>
@@ -349,8 +349,8 @@ export function HomeScreen() {
 
             <div className="space-y-2.5">
               {dueTodayEnquiries.length === 0 ? (
-                <div className="bg-white p-5 rounded-3xl border border-[#E5DFD1] text-center text-xs text-[#56645E]">
-                  <p className="font-bold text-[#19221E]">No follow-ups due today</p>
+                <div className="bg-white dark:bg-[#18221D] p-5 rounded-3xl border border-[#E5DFD1] dark:border-[#27362E] text-center text-xs text-[#56645E] dark:text-[#8E9F97]">
+                  <p className="font-bold text-[#19221E] dark:text-[#F0F4F2]">No follow-ups due today</p>
                   <p className="mt-0.5">All customer inquiries are addressed.</p>
                 </div>
               ) : (
@@ -363,26 +363,26 @@ export function HomeScreen() {
                   return (
                     <div
                       key={enq.id}
-                      className="bg-white p-4 rounded-3xl border border-[#E5DFD1] hover:border-[#D0C6B4] flex items-center justify-between shadow-xs transition-all"
+                      className="bg-white dark:bg-[#18221D] p-4 rounded-3xl border border-[#E5DFD1] dark:border-[#27362E] hover:border-[#D0C6B4] dark:hover:border-[#384C41] flex items-center justify-between shadow-xs transition-all"
                     >
                       <div className="pr-2 min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <h5 className="font-extrabold text-sm text-[#19221E] truncate">
+                          <h5 className="font-extrabold text-sm text-[#19221E] dark:text-[#F0F4F2] truncate">
                             {enq.contact_name}
                           </h5>
                           {isLate && (
-                            <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-[#FCEFE7] text-[#C25E1A]">
+                            <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-[#FCEFE7] dark:bg-[#2D1B11] text-[#C25E1A] dark:text-[#E06D24]">
                               Overdue
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-[#56645E] mt-0.5 truncate">
+                        <p className="text-xs text-[#56645E] dark:text-[#8E9F97] mt-0.5 truncate">
                           <span className="font-medium">{item?.name || 'Goods'}</span>
                           <span> · {enq.pieces_wanted} pcs · </span>
                           {isShort ? (
-                            <span className="text-[#C25E1A] font-bold">Only {inStock} in stock</span>
+                            <span className="text-[#C25E1A] dark:text-[#E06D24] font-bold">Only {inStock} in stock</span>
                           ) : (
-                            <span className="text-[#184E3A] font-bold">{inStock} in stock</span>
+                            <span className="text-[#184E3A] dark:text-emerald-400 font-bold">{inStock} in stock</span>
                           )}
                         </p>
                       </div>
@@ -391,10 +391,10 @@ export function HomeScreen() {
                         {enq.phone && (
                           <a
                             href={`tel:${enq.phone}`}
-                            className="w-9 h-9 rounded-full bg-[#F3EFE6] text-[#19221E] flex items-center justify-center hover:bg-[#EAE4D6] transition-colors"
+                            className="w-9 h-9 rounded-full bg-[#F3EFE6] dark:bg-[#233129] text-[#19221E] dark:text-[#F0F4F2] flex items-center justify-center hover:bg-[#EAE4D6] dark:hover:bg-[#2B3C32] transition-colors"
                             title="Call Buyer"
                           >
-                            <PhoneCall className="w-4 h-4 text-[#56645E]" />
+                            <PhoneCall className="w-4 h-4 text-[#56645E] dark:text-[#8E9F97]" />
                           </a>
                         )}
                         <button
@@ -405,7 +405,7 @@ export function HomeScreen() {
                               `regarding ${item?.name || 'goods'} ${enq.pieces_wanted} pcs inquiry`
                             )
                           }
-                          className="w-9 h-9 rounded-full bg-[#E5EFE7] hover:bg-[#D5E6D8] text-[#184E3A] flex items-center justify-center transition-colors shadow-2xs"
+                          className="w-9 h-9 rounded-full bg-[#E5EFE7] dark:bg-[#1A3428] hover:bg-[#D5E6D8] dark:hover:bg-[#244737] text-[#184E3A] dark:text-emerald-400 flex items-center justify-center transition-colors shadow-2xs"
                           title="Message on WhatsApp"
                         >
                           <MessageCircle className="w-4 h-4 fill-current" />
@@ -421,19 +421,19 @@ export function HomeScreen() {
           {/* Recent Active Invoices with Tally Slip Quick View */}
           <div className="space-y-3">
             <div className="flex items-center justify-between px-1">
-              <h4 className="font-extrabold text-base text-[#19221E] tracking-tight">
+              <h4 className="font-extrabold text-base text-[#19221E] dark:text-[#F0F4F2] tracking-tight">
                 {t.recentBills}
               </h4>
-              <span className="text-xs font-semibold text-[#56645E]">
+              <span className="text-xs font-semibold text-[#56645E] dark:text-[#8E9F97]">
                 {recentInvoices.length} {t.recentBills.toLowerCase()}
               </span>
             </div>
 
             <div className="space-y-2.5">
               {recentInvoices.length === 0 ? (
-                <div className="bg-white p-5 rounded-3xl border border-[#E5DFD1] text-center space-y-1">
-                  <p className="text-xs font-bold text-[#19221E]">No bills created yet.</p>
-                  <p className="text-[11px] text-[#56645E]">
+                <div className="bg-white dark:bg-[#18221D] p-5 rounded-3xl border border-[#E5DFD1] dark:border-[#27362E] text-center space-y-1">
+                  <p className="text-xs font-bold text-[#19221E] dark:text-[#F0F4F2]">No bills created yet.</p>
+                  <p className="text-[11px] text-[#56645E] dark:text-[#8E9F97]">
                     Tap &quot;New Bill&quot; above to create your first digital mandi invoice.
                   </p>
                 </div>
@@ -442,23 +442,23 @@ export function HomeScreen() {
                   <div
                     key={inv.id}
                     onClick={() => handleOpenInvoice(inv)}
-                    className="w-full text-left bg-white p-4 rounded-3xl border border-[#E5DFD1] hover:border-[#C8BFAC] hover:shadow-xs flex items-center justify-between transition-all cursor-pointer group"
+                    className="w-full text-left bg-white dark:bg-[#18221D] p-4 rounded-3xl border border-[#E5DFD1] dark:border-[#27362E] hover:border-[#C8BFAC] dark:hover:border-[#384C41] hover:shadow-xs flex items-center justify-between transition-all cursor-pointer group"
                   >
                     <div className="min-w-0 pr-3">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-black text-xs text-[#184E3A] bg-[#E7EFE9] px-2 py-0.5 rounded-lg">
+                        <span className="font-mono font-black text-xs text-[#184E3A] dark:text-emerald-400 bg-[#E7EFE9] dark:bg-[#1A3428] px-2 py-0.5 rounded-lg">
                           #{inv.bill_no}
                         </span>
-                        <span className="font-extrabold text-sm text-[#19221E] truncate">
+                        <span className="font-extrabold text-sm text-[#19221E] dark:text-[#F0F4F2] truncate">
                           {inv.buyer_name}
                         </span>
                         {inv.status === 'cancelled' && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-100 text-red-700">
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-400">
                             Cancelled
                           </span>
                         )}
                       </div>
-                      <p className="text-xs font-medium text-[#56645E] mt-1 truncate">
+                      <p className="text-xs font-medium text-[#56645E] dark:text-[#8E9F97] mt-1 truncate">
                         {new Date(inv.bill_date).toLocaleDateString('en-IN', {
                           day: 'numeric',
                           month: 'short',
@@ -470,12 +470,12 @@ export function HomeScreen() {
 
                     <div className="text-right shrink-0 flex items-center gap-2">
                       <div>
-                        <span className="text-sm font-black font-mono text-[#19221E] group-hover:text-[#184E3A] transition-colors block">
+                        <span className="text-sm font-black font-mono text-[#19221E] dark:text-[#F0F4F2] group-hover:text-[#184E3A] dark:group-hover:text-emerald-400 transition-colors block">
                           {formatCurrency(inv.total)}
                         </span>
-                        <span className="text-[10px] text-[#56645E] font-semibold">Tally Bill</span>
+                        <span className="text-[10px] text-[#56645E] dark:text-[#8E9F97] font-semibold">Tally Bill</span>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-[#A8A29E] group-hover:translate-x-0.5 group-hover:text-[#184E3A] transition-transform" />
+                      <ChevronRight className="w-4 h-4 text-[#A8A29E] dark:text-[#657870] group-hover:translate-x-0.5 group-hover:text-[#184E3A] dark:group-hover:text-emerald-400 transition-transform" />
                     </div>
                   </div>
                 ))

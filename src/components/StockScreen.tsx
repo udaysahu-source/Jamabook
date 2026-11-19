@@ -135,43 +135,43 @@ export function StockScreen() {
 
       {/* Top Metric Cards Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="bg-white p-4 rounded-3xl border border-[#E5DFD1] shadow-xs">
-          <span className="text-[11px] font-black uppercase text-[#56645E] block">Total Pieces</span>
+        <div className="bg-white dark:bg-[#18221D] p-4 rounded-3xl border border-[#E5DFD1] dark:border-[#27362E] shadow-xs">
+          <span className="text-[11px] font-black uppercase text-[#56645E] dark:text-[#8E9F97] block">Total Pieces</span>
           <div className="mt-1 flex items-baseline gap-1">
-            <span className="text-2xl sm:text-3xl font-black font-mono text-[#19221E]">
+            <span className="text-2xl sm:text-3xl font-black font-mono text-[#19221E] dark:text-[#F0F4F2]">
               {formatIndianNumber(totalPiecesInHand)}
             </span>
-            <span className="text-xs font-bold text-[#56645E]">Bags</span>
+            <span className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97]">Bags</span>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-3xl border border-[#E5DFD1] shadow-xs">
-          <span className="text-[11px] font-black uppercase text-[#56645E] block">Total Weight</span>
+        <div className="bg-white dark:bg-[#18221D] p-4 rounded-3xl border border-[#E5DFD1] dark:border-[#27362E] shadow-xs">
+          <span className="text-[11px] font-black uppercase text-[#56645E] dark:text-[#8E9F97] block">Total Weight</span>
           <div className="mt-1 flex items-baseline gap-1">
-            <span className="text-2xl sm:text-3xl font-black font-mono text-[#184E3A]">
+            <span className="text-2xl sm:text-3xl font-black font-mono text-[#184E3A] dark:text-emerald-400">
               {totalQuintals}
             </span>
-            <span className="text-xs font-bold text-[#56645E]">Qtl</span>
+            <span className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97]">Qtl</span>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-3xl border border-[#E5DFD1] shadow-xs">
-          <span className="text-[11px] font-black uppercase text-[#56645E] block">Commodities</span>
+        <div className="bg-white dark:bg-[#18221D] p-4 rounded-3xl border border-[#E5DFD1] dark:border-[#27362E] shadow-xs">
+          <span className="text-[11px] font-black uppercase text-[#56645E] dark:text-[#8E9F97] block">Commodities</span>
           <div className="mt-1 flex items-baseline gap-1">
-            <span className="text-2xl sm:text-3xl font-black font-mono text-[#19221E]">
+            <span className="text-2xl sm:text-3xl font-black font-mono text-[#19221E] dark:text-[#F0F4F2]">
               {items.length}
             </span>
-            <span className="text-xs font-bold text-[#56645E]">Active</span>
+            <span className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97]">Active</span>
           </div>
         </div>
 
-        <div className="bg-[#FCF8EE] p-4 rounded-3xl border border-[#EADBCA] shadow-xs">
-          <span className="text-[11px] font-black uppercase text-[#8C3D0E] block">Low Stock Alert</span>
+        <div className="bg-[#FCF8EE] dark:bg-[#201812] p-4 rounded-3xl border border-[#EADBCA] dark:border-[#3D291A] shadow-xs">
+          <span className="text-[11px] font-black uppercase text-[#8C3D0E] dark:text-[#E06D24] block">Low Stock Alert</span>
           <div className="mt-1 flex items-baseline gap-1">
-            <span className={`text-2xl sm:text-3xl font-black font-mono ${lowStockCount > 0 ? 'text-[#C25E1A]' : 'text-emerald-700'}`}>
+            <span className={`text-2xl sm:text-3xl font-black font-mono ${lowStockCount > 0 ? 'text-[#C25E1A] dark:text-[#E06D24]' : 'text-emerald-700 dark:text-emerald-400'}`}>
               {lowStockCount}
             </span>
-            <span className="text-xs font-bold text-[#8C3D0E]">Items</span>
+            <span className="text-xs font-bold text-[#8C3D0E] dark:text-[#E06D24]">Items</span>
           </div>
         </div>
       </div>
@@ -214,31 +214,31 @@ export function StockScreen() {
                   <div
                     key={item.id}
                     onClick={() => setSelectedItemId(item.id)}
-                    className={`bg-white p-5 rounded-3xl border transition-all cursor-pointer shadow-xs ${
+                    className={`p-5 rounded-3xl border transition-all cursor-pointer shadow-xs ${
                       isSelected
-                        ? 'border-[#184E3A] ring-2 ring-[#184E3A]/20 bg-[#FDFAF3]'
-                        : 'border-[#E5DFD1] hover:border-[#C8BFAC]'
+                        ? 'border-[#184E3A] dark:border-emerald-500 ring-2 ring-[#184E3A]/20 dark:ring-emerald-500/20 bg-[#FDFAF3] dark:bg-[#16231C]'
+                        : 'bg-white dark:bg-[#18221D] border-[#E5DFD1] dark:border-[#27362E] hover:border-[#C8BFAC] dark:hover:border-[#384C41]'
                     }`}
                   >
                     <div className="flex justify-between items-start">
                       <div className="pr-3 min-w-0">
                         <div className="flex items-center gap-2">
-                          <h3 className="text-base sm:text-lg font-black text-[#19221E] leading-snug truncate">
+                          <h3 className="text-base sm:text-lg font-black text-[#19221E] dark:text-[#F0F4F2] leading-snug truncate">
                             {item.name}
                           </h3>
                           {isSelected && (
-                            <span className="hidden sm:inline-block w-2 h-2 rounded-full bg-[#184E3A]" />
+                            <span className="hidden sm:inline-block w-2 h-2 rounded-full bg-[#184E3A] dark:bg-emerald-400" />
                           )}
                         </div>
-                        <p className="text-xs font-semibold text-[#56645E] mt-0.5">
+                        <p className="text-xs font-semibold text-[#56645E] dark:text-[#8E9F97] mt-0.5">
                           {formatIndianNumber(totalKg)} kg · {item.kg_per_piece} kg per bag packing
                         </p>
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-xs font-mono font-bold text-[#184E3A] bg-[#E7EFE9] px-2 py-0.5 rounded-lg">
+                          <span className="text-xs font-mono font-bold text-[#184E3A] dark:text-emerald-400 bg-[#E7EFE9] dark:bg-[#1A3428] px-2 py-0.5 rounded-lg">
                             Rate: ₹{formatIndianNumber(item.default_rate || 0)}/{item.rate_unit === 'per_quintal' ? 'Qtl' : 'kg'}
                           </span>
                           {isLow && (
-                            <span className="px-2.5 py-0.5 rounded-full bg-[#C25E1A] text-white text-[10px] font-black tracking-wide">
+                            <span className="px-2.5 py-0.5 rounded-full bg-[#C25E1A] dark:bg-[#E06D24] text-white text-[10px] font-black tracking-wide">
                               {t.lowStockBadge}
                             </span>
                           )}
@@ -249,28 +249,28 @@ export function StockScreen() {
                         <div className="flex items-baseline justify-end gap-1">
                           <span
                             className={`text-3xl sm:text-4xl font-black font-mono tracking-tight ${
-                              isLow ? 'text-[#C25E1A]' : 'text-[#19221E]'
+                              isLow ? 'text-[#C25E1A] dark:text-[#E06D24]' : 'text-[#19221E] dark:text-[#F0F4F2]'
                             }`}
                           >
                             {formatIndianNumber(inStock)}
                           </span>
-                          <span className="text-xs font-black text-[#56645E]">{t.pcs}</span>
+                          <span className="text-xs font-black text-[#56645E] dark:text-[#8E9F97]">{t.pcs}</span>
                         </div>
-                        <span className="text-[11px] font-bold text-[#56645E] block mt-0.5">
+                        <span className="text-[11px] font-bold text-[#56645E] dark:text-[#8E9F97] block mt-0.5">
                           {(totalKg / 100).toFixed(1)} Qtl
                         </span>
                       </div>
                     </div>
 
                     {/* Action Buttons: Stock In & Adjust */}
-                    <div className="grid grid-cols-2 gap-3 pt-4 mt-2 border-t border-[#F2ECE1]">
+                    <div className="grid grid-cols-2 gap-3 pt-4 mt-2 border-t border-[#F2ECE1] dark:border-[#27362E]">
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleOpenStockIn(item);
                         }}
-                        className="bg-[#184E3A] hover:bg-[#123E2E] active:scale-[0.98] text-white py-2.5 px-3 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all"
+                        className="bg-[#184E3A] hover:bg-[#123E2E] dark:bg-[#226E52] dark:hover:bg-[#1A5741] active:scale-[0.98] text-white py-2.5 px-3 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all"
                       >
                         <Plus className="w-4 h-4 stroke-[3]" />
                         <span>{t.stockIn} (आवक)</span>
@@ -282,9 +282,9 @@ export function StockScreen() {
                           e.stopPropagation();
                           handleOpenAdjust(item);
                         }}
-                        className="bg-white border border-[#D9D2C3] hover:bg-[#F2ECE1] text-[#19221E] py-2.5 px-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
+                        className="bg-white dark:bg-[#131B17] border border-[#D9D2C3] dark:border-[#27362E] hover:bg-[#F2ECE1] dark:hover:bg-[#1C2721] text-[#19221E] dark:text-[#F0F4F2] py-2.5 px-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
                       >
-                        <SlidersHorizontal className="w-3.5 h-3.5 text-[#56645E]" />
+                        <SlidersHorizontal className="w-3.5 h-3.5 text-[#56645E] dark:text-[#8E9F97]" />
                         <span>{t.adjust} (पुनर्गणना)</span>
                       </button>
                     </div>
@@ -299,36 +299,36 @@ export function StockScreen() {
         <div className="lg:col-span-5 space-y-4 sticky top-6">
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-2">
-              <History className="w-4 h-4 text-[#184E3A]" />
-              <h4 className="font-extrabold text-sm text-[#19221E] uppercase tracking-wider">
+              <History className="w-4 h-4 text-[#184E3A] dark:text-emerald-400" />
+              <h4 className="font-extrabold text-sm text-[#19221E] dark:text-[#F0F4F2] uppercase tracking-wider">
                 Commodity Ledger
               </h4>
             </div>
-            <span className="text-xs font-mono font-bold text-[#184E3A] bg-[#E7EFE9] px-2 py-0.5 rounded-lg truncate max-w-[150px]">
+            <span className="text-xs font-mono font-bold text-[#184E3A] dark:text-emerald-400 bg-[#E7EFE9] dark:bg-[#1A3428] px-2 py-0.5 rounded-lg truncate max-w-[150px]">
               {activeItem?.name || 'Selected'}
             </span>
           </div>
 
-          <div className="bg-white p-5 rounded-3xl border border-[#E5DFD1] shadow-xs space-y-3.5">
-            <div className="flex justify-between items-center pb-3 border-b border-[#F2ECE1]">
+          <div className="bg-white dark:bg-[#18221D] p-5 rounded-3xl border border-[#E5DFD1] dark:border-[#27362E] shadow-xs space-y-3.5">
+            <div className="flex justify-between items-center pb-3 border-b border-[#F2ECE1] dark:border-[#27362E]">
               <div>
-                <p className="font-black text-base text-[#19221E]">{activeItem?.name}</p>
-                <p className="text-xs text-[#56645E]">
+                <p className="font-black text-base text-[#19221E] dark:text-[#F0F4F2]">{activeItem?.name}</p>
+                <p className="text-xs text-[#56645E] dark:text-[#8E9F97]">
                   Packing: {activeItem?.kg_per_piece} kg · Min: {activeItem?.low_stock_pieces || 10} bags
                 </p>
               </div>
               <div className="text-right">
-                <span className="text-2xl font-black font-mono text-[#19221E]">
+                <span className="text-2xl font-black font-mono text-[#19221E] dark:text-[#F0F4F2]">
                   {formatIndianNumber(activeItem?.pieces_in_stock || 0)}
                 </span>
-                <span className="text-xs font-bold text-[#56645E] ml-1">Bags</span>
+                <span className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97] ml-1">Bags</span>
               </div>
             </div>
 
             {/* Movement Entries */}
             <div className="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
               {itemMovements.length === 0 ? (
-                <div className="p-6 text-center text-xs text-[#56645E] bg-[#F9F6F0] rounded-2xl">
+                <div className="p-6 text-center text-xs text-[#56645E] dark:text-[#8E9F97] bg-[#F9F6F0] dark:bg-[#131B17] rounded-2xl">
                   No stock entries logged for this item yet.
                 </div>
               ) : (
@@ -337,7 +337,7 @@ export function StockScreen() {
                   return (
                     <div
                       key={mov.id}
-                      className="p-3 rounded-2xl bg-[#F9F6F0] border border-[#E5DFD1]/80 flex items-center justify-between"
+                      className="p-3 rounded-2xl bg-[#F9F6F0] dark:bg-[#131B17] border border-[#E5DFD1]/80 dark:border-[#27362E] flex items-center justify-between"
                     >
                       <div className="flex items-center gap-2.5 min-w-0 pr-2">
                         <div
@@ -379,14 +379,14 @@ export function StockScreen() {
 
       {/* Add Commodity Modal */}
       {showAddItemModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-xl animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#18221D] rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-xl border border-[#E5DFD1] dark:border-[#27362E] animate-in zoom-in-95">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-black text-[#19221E]">New Trading Commodity</h3>
+              <h3 className="text-lg font-black text-[#19221E] dark:text-[#F0F4F2]">New Trading Commodity</h3>
               <button
                 type="button"
                 onClick={() => setShowAddItemModal(false)}
-                className="w-8 h-8 rounded-full bg-[#F3EFE6] text-[#56645E] flex items-center justify-center"
+                className="w-8 h-8 rounded-full bg-[#F3EFE6] dark:bg-[#233129] text-[#56645E] dark:text-[#8E9F97] flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -394,43 +394,43 @@ export function StockScreen() {
 
             <div className="space-y-3.5">
               <div>
-                <label className="text-xs font-bold text-[#56645E] block mb-1">Commodity Name *</label>
+                <label className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97] block mb-1">Commodity Name *</label>
                 <input
                   type="text"
                   placeholder="e.g. Mung Prestige Pro / Chana"
                   value={newItemName}
                   onChange={(e) => setNewItemName(e.target.value)}
-                  className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl p-2.5 text-sm font-bold focus:outline-none focus:border-[#184E3A]"
+                  className="w-full bg-[#F9F6F0] dark:bg-[#131B17] border border-[#D9D2C3] dark:border-[#27362E] rounded-2xl p-2.5 text-sm font-bold text-[#19221E] dark:text-[#F0F4F2] focus:outline-none focus:border-[#184E3A]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-bold text-[#56645E] block mb-1">Bag Packing (Kg) *</label>
+                  <label className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97] block mb-1">Bag Packing (Kg) *</label>
                   <input
                     type="number"
                     value={newItemKg}
                     onChange={(e) =>
                       setNewItemKg(e.target.value === '' ? '' : Math.max(1, parseFloat(e.target.value) || 0))
                     }
-                    className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl p-2.5 text-sm font-bold font-mono focus:outline-none focus:border-[#184E3A]"
+                    className="w-full bg-[#F9F6F0] dark:bg-[#131B17] border border-[#D9D2C3] dark:border-[#27362E] rounded-2xl p-2.5 text-sm font-bold font-mono text-[#19221E] dark:text-[#F0F4F2] focus:outline-none focus:border-[#184E3A]"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-[#56645E] block mb-1">Low Stock Warning</label>
+                  <label className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97] block mb-1">Low Stock Warning</label>
                   <input
                     type="number"
                     value={newItemLowStock}
                     onChange={(e) =>
                       setNewItemLowStock(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))
                     }
-                    className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl p-2.5 text-sm font-bold font-mono focus:outline-none focus:border-[#184E3A]"
+                    className="w-full bg-[#F9F6F0] dark:bg-[#131B17] border border-[#D9D2C3] dark:border-[#27362E] rounded-2xl p-2.5 text-sm font-bold font-mono text-[#19221E] dark:text-[#F0F4F2] focus:outline-none focus:border-[#184E3A]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#56645E] block mb-1">Default Rate (₹)</label>
+                <label className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97] block mb-1">Default Rate (₹)</label>
                 <div className="flex gap-2">
                   <input
                     type="number"
@@ -438,12 +438,12 @@ export function StockScreen() {
                     onChange={(e) =>
                       setNewItemRate(e.target.value === '' ? '' : Math.max(0, parseFloat(e.target.value) || 0))
                     }
-                    className="flex-1 bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl p-2.5 text-sm font-bold font-mono focus:outline-none focus:border-[#184E3A]"
+                    className="flex-1 bg-[#F9F6F0] dark:bg-[#131B17] border border-[#D9D2C3] dark:border-[#27362E] rounded-2xl p-2.5 text-sm font-bold font-mono text-[#19221E] dark:text-[#F0F4F2] focus:outline-none focus:border-[#184E3A]"
                   />
                   <select
                     value={newItemUnit}
                     onChange={(e) => setNewItemUnit(e.target.value as any)}
-                    className="bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl px-3 text-xs font-bold"
+                    className="bg-[#F9F6F0] dark:bg-[#131B17] border border-[#D9D2C3] dark:border-[#27362E] text-[#19221E] dark:text-[#F0F4F2] rounded-2xl px-3 text-xs font-bold"
                   >
                     <option value="per_quintal">/ Quintal</option>
                     <option value="per_kg">/ Kg</option>
@@ -457,7 +457,7 @@ export function StockScreen() {
               <button
                 type="button"
                 onClick={() => setShowAddItemModal(false)}
-                className="flex-1 py-3 rounded-2xl font-bold text-sm bg-[#F3EFE6] text-[#56645E]"
+                className="flex-1 py-3 rounded-2xl font-bold text-sm bg-[#F3EFE6] dark:bg-[#233129] text-[#56645E] dark:text-[#8E9F97]"
               >
                 Cancel
               </button>
@@ -465,7 +465,7 @@ export function StockScreen() {
                 type="button"
                 onClick={handleCreateNewCommodity}
                 disabled={!newItemName.trim() || !newItemKg}
-                className="flex-1 py-3 rounded-2xl font-black text-sm bg-[#184E3A] text-white disabled:opacity-50"
+                className="flex-1 py-3 rounded-2xl font-black text-sm bg-[#184E3A] dark:bg-[#226E52] text-white disabled:opacity-50"
               >
                 Register
               </button>
@@ -476,17 +476,17 @@ export function StockScreen() {
 
       {/* Stock In Modal */}
       {showStockInModal && targetItemForStockIn && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-xl animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#18221D] rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-xl border border-[#E5DFD1] dark:border-[#27362E] animate-in zoom-in-95">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-black text-[#19221E]">{t.stockIn} (आवक)</h3>
-                <p className="text-xs text-[#56645E]">{targetItemForStockIn.name}</p>
+                <h3 className="text-lg font-black text-[#19221E] dark:text-[#F0F4F2]">{t.stockIn} (आवक)</h3>
+                <p className="text-xs text-[#56645E] dark:text-[#8E9F97]">{targetItemForStockIn.name}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowStockInModal(false)}
-                className="w-8 h-8 rounded-full bg-[#F3EFE6] text-[#56645E] flex items-center justify-center"
+                className="w-8 h-8 rounded-full bg-[#F3EFE6] dark:bg-[#233129] text-[#56645E] dark:text-[#8E9F97] flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -494,7 +494,7 @@ export function StockScreen() {
 
             <div className="space-y-3.5">
               <div>
-                <label className="text-xs font-bold text-[#56645E] block mb-1">
+                <label className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97] block mb-1">
                   Received Bags / Pieces *
                 </label>
                 <input
@@ -503,12 +503,12 @@ export function StockScreen() {
                   onChange={(e) =>
                     setStockInPieces(e.target.value === '' ? '' : Math.max(1, parseInt(e.target.value) || 0))
                   }
-                  className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl p-2.5 text-base font-black font-mono focus:outline-none focus:border-[#184E3A]"
+                  className="w-full bg-[#F9F6F0] dark:bg-[#131B17] border border-[#D9D2C3] dark:border-[#27362E] rounded-2xl p-2.5 text-base font-black font-mono text-[#19221E] dark:text-[#F0F4F2] focus:outline-none focus:border-[#184E3A]"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#56645E] block mb-1">
+                <label className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97] block mb-1">
                   Source / Supplier / Mill
                 </label>
                 <input
@@ -516,7 +516,7 @@ export function StockScreen() {
                   placeholder="e.g. Purchase from Guntur mill"
                   value={stockInNote}
                   onChange={(e) => setStockInNote(e.target.value)}
-                  className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl p-2.5 text-sm font-bold focus:outline-none focus:border-[#184E3A]"
+                  className="w-full bg-[#F9F6F0] dark:bg-[#131B17] border border-[#D9D2C3] dark:border-[#27362E] rounded-2xl p-2.5 text-sm font-bold text-[#19221E] dark:text-[#F0F4F2] focus:outline-none focus:border-[#184E3A]"
                 />
               </div>
             </div>
@@ -525,7 +525,7 @@ export function StockScreen() {
               <button
                 type="button"
                 onClick={() => setShowStockInModal(false)}
-                className="flex-1 py-3 rounded-2xl font-bold text-sm bg-[#F3EFE6] text-[#56645E]"
+                className="flex-1 py-3 rounded-2xl font-bold text-sm bg-[#F3EFE6] dark:bg-[#233129] text-[#56645E] dark:text-[#8E9F97]"
               >
                 Cancel
               </button>
@@ -533,7 +533,7 @@ export function StockScreen() {
                 type="button"
                 onClick={handleSubmitStockIn}
                 disabled={!stockInPieces || stockInPieces <= 0}
-                className="flex-1 py-3 rounded-2xl font-black text-sm bg-[#184E3A] text-white disabled:opacity-50"
+                className="flex-1 py-3 rounded-2xl font-black text-sm bg-[#184E3A] dark:bg-[#226E52] text-white disabled:opacity-50"
               >
                 Add to Stock
               </button>
@@ -544,17 +544,17 @@ export function StockScreen() {
 
       {/* Adjust Modal */}
       {showAdjustModal && targetItemForAdjust && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-xl animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#18221D] rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-xl border border-[#E5DFD1] dark:border-[#27362E] animate-in zoom-in-95">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-black text-[#19221E]">{t.adjust} (पुनर्गणना)</h3>
-                <p className="text-xs text-[#56645E]">{targetItemForAdjust.name}</p>
+                <h3 className="text-lg font-black text-[#19221E] dark:text-[#F0F4F2]">{t.adjust} (पुनर्गणना)</h3>
+                <p className="text-xs text-[#56645E] dark:text-[#8E9F97]">{targetItemForAdjust.name}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowAdjustModal(false)}
-                className="w-8 h-8 rounded-full bg-[#F3EFE6] text-[#56645E] flex items-center justify-center"
+                className="w-8 h-8 rounded-full bg-[#F3EFE6] dark:bg-[#233129] text-[#56645E] dark:text-[#8E9F97] flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -562,7 +562,7 @@ export function StockScreen() {
 
             <div className="space-y-3.5">
               <div>
-                <label className="text-xs font-bold text-[#56645E] block mb-1">
+                <label className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97] block mb-1">
                   Pieces Adjustment (+ or -) *
                 </label>
                 <input
@@ -572,20 +572,20 @@ export function StockScreen() {
                   onChange={(e) =>
                     setAdjustPieces(e.target.value === '' ? '' : parseInt(e.target.value) || 0)
                   }
-                  className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl p-2.5 text-base font-black font-mono focus:outline-none focus:border-[#184E3A]"
+                  className="w-full bg-[#F9F6F0] dark:bg-[#131B17] border border-[#D9D2C3] dark:border-[#27362E] rounded-2xl p-2.5 text-base font-black font-mono text-[#19221E] dark:text-[#F0F4F2] focus:outline-none focus:border-[#184E3A]"
                 />
-                <p className="text-[10px] text-[#56645E] mt-1">
+                <p className="text-[10px] text-[#56645E] dark:text-[#8E9F97] mt-1">
                   Current stock in warehouse: {targetItemForAdjust.pieces_in_stock} bags
                 </p>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#56645E] block mb-1">Reason / Note</label>
+                <label className="text-xs font-bold text-[#56645E] dark:text-[#8E9F97] block mb-1">Reason / Note</label>
                 <input
                   type="text"
                   value={adjustNote}
                   onChange={(e) => setAdjustNote(e.target.value)}
-                  className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl p-2.5 text-sm font-bold focus:outline-none focus:border-[#184E3A]"
+                  className="w-full bg-[#F9F6F0] dark:bg-[#131B17] border border-[#D9D2C3] dark:border-[#27362E] rounded-2xl p-2.5 text-sm font-bold text-[#19221E] dark:text-[#F0F4F2] focus:outline-none focus:border-[#184E3A]"
                 />
               </div>
             </div>
@@ -594,7 +594,7 @@ export function StockScreen() {
               <button
                 type="button"
                 onClick={() => setShowAdjustModal(false)}
-                className="flex-1 py-3 rounded-2xl font-bold text-sm bg-[#F3EFE6] text-[#56645E]"
+                className="flex-1 py-3 rounded-2xl font-bold text-sm bg-[#F3EFE6] dark:bg-[#233129] text-[#56645E] dark:text-[#8E9F97]"
               >
                 Cancel
               </button>
@@ -602,7 +602,7 @@ export function StockScreen() {
                 type="button"
                 onClick={handleSubmitAdjust}
                 disabled={adjustPieces === '' || adjustPieces === 0}
-                className="flex-1 py-3 rounded-2xl font-black text-sm bg-[#184E3A] text-white disabled:opacity-50"
+                className="flex-1 py-3 rounded-2xl font-black text-sm bg-[#184E3A] dark:bg-[#226E52] text-white disabled:opacity-50"
               >
                 Confirm Recount
               </button>
