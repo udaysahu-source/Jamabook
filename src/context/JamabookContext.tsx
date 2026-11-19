@@ -24,6 +24,14 @@ import {
   ItemSchema,
   BusinessProfileSchema,
 } from '@/lib/validations';
+import {
+  DEMO_BUSINESS,
+  DEMO_PARTIES,
+  DEMO_ITEMS,
+  DEMO_STOCK_MOVEMENTS,
+  DEMO_INVOICES,
+  DEMO_ENQUIRIES,
+} from '@/lib/demoData';
 
 export type AppView =
   | 'home'
@@ -88,6 +96,7 @@ interface JamabookContextType {
   addItem: (item: Omit<Item, 'id' | 'business_id' | 'created_at' | 'pieces_in_stock'>) => { success: boolean; item?: Item; error?: string };
   updateBusinessProfile: (updates: Partial<Business>) => { success: boolean; error?: string };
   clearLedger: () => void;
+  loadDemoData: () => void;
   getLastBillForBuyer: (buyerId: string) => Invoice | null;
 }
 
@@ -145,6 +154,22 @@ export function JamabookProvider({ children }: { children: React.ReactNode }) {
         if (parsed.invoices) setInvoices(parsed.invoices);
         if (parsed.enquiries) setEnquiries(parsed.enquiries);
         if (parsed.language) setLanguage(parsed.language);
+
+        // If previously logged into demo account with empty items, load full rich demo data
+        if (savedAuth) {
+          const parsedAuth = JSON.parse(savedAuth);
+          if (
+            parsedAuth?.user?.email === 'trader@rtc.com' &&
+            (!parsed.items || parsed.items.length === 0)
+          ) {
+            setBusiness(DEMO_BUSINESS);
+            setParties(DEMO_PARTIES);
+            setRawItems(DEMO_ITEMS);
+            setStockMovements(DEMO_STOCK_MOVEMENTS);
+            setInvoices(DEMO_INVOICES);
+            setEnquiries(DEMO_ENQUIRIES);
+          }
+        }
       }
     } catch {
       // Storage unavailable
@@ -193,8 +218,31 @@ export function JamabookProvider({ children }: { children: React.ReactNode }) {
     setLanguage((prev) => (prev === 'en' ? 'hi' : 'en'));
   };
 
+  // Populate realistic Indian Mandi demo data for live preview & Tally ledger
+  const loadDemoData = () => {
+    setBusiness(DEMO_BUSINESS);
+    setParties(DEMO_PARTIES);
+    setRawItems(DEMO_ITEMS);
+    setStockMovements(DEMO_STOCK_MOVEMENTS);
+    setInvoices(DEMO_INVOICES);
+    setEnquiries(DEMO_ENQUIRIES);
+    const mockUser: AppUser = {
+      id: 'usr-owner-1',
+      email: 'trader@rtc.com',
+      role: 'owner',
+      business_id: DEMO_BUSINESS.id,
+    };
+    setUser(mockUser);
+    setToken(`mock-token::${mockUser.id}::${DEMO_BUSINESS.id}::owner::trader@rtc.com`);
+    setActiveView('home');
+  };
+
   // Authentication: Login
   const login = async (email: string, pass: string) => {
+    if (email === 'trader@rtc.com') {
+      loadDemoData();
+      return { success: true };
+    }
     const mockUser: AppUser = {
       id: 'usr-owner-1',
       email,
@@ -701,6 +749,7 @@ export function JamabookProvider({ children }: { children: React.ReactNode }) {
         addItem,
         updateBusinessProfile,
         clearLedger,
+        loadDemoData,
         getLastBillForBuyer,
       }}
     >

@@ -8,7 +8,7 @@ import { SignUpSchema, SignInSchema, PinAuthSchema } from '@/lib/validations';
 import { Lock, Mail, Building2, KeyRound, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export function AuthScreen() {
-  const { language, login, signup, unlockWithPin, hasPinSetup } = useJamabook();
+  const { language, login, signup, unlockWithPin, hasPinSetup, loadDemoData } = useJamabook();
   const t = getT(language);
 
   const [mode, setMode] = useState<'signin' | 'signup' | 'pin'>('signin');
@@ -101,7 +101,7 @@ export function AuthScreen() {
   const handleUseDemoAccount = () => {
     setEmail('trader@rtc.com');
     setPassword('MandiTrader2026');
-    login('trader@rtc.com', 'MandiTrader2026');
+    loadDemoData();
   };
 
   return (

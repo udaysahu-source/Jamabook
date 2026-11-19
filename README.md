@@ -34,8 +34,20 @@ Built following the [frontend-design](.agent/skills/frontend-design.md) specific
   Segmented toggles switch effortlessly between `per quintal`, `per kg`, and `per piece`.
 * **Snapshot Preservation**: Bills capture immutable historical snapshots of buyer names, towns, commodity prices, and units so master data edits never distort past accounting.
 * **Instant WhatsApp Sharing**: Generates pre-formatted `wa.me` links with bill details and amounts ready to send.
-* **Physical Slip Preview & Thermal Print**: Complete printable layout with double borders, T.P. Number, vehicle number, broker, item table, and Indian words currency converter (*"Rupees One Lakh Sixty-Five Thousand Eight Hundred Only"*).
+* **Tally Prime Invoice & Party Ledger PDF Templates**:
+  - **Tally Prime Tax Invoice**: Features the classic Tally accounting grid layout, seller/buyer metadata, HSN codes, quantity in bags and quintals, rate per qtl, extra mandi charges (Freight, Hammali, Mandi Cess), company bank details (SBI), legal declaration, and authorized signatory stamp area.
+  - **Tally Prime Party Ledger Statement (खाता नकल)**: Complete 6-column statement of accounts (`Date`, `Particulars`, `Vch Type`, `Vch No`, `Debit`, `Credit`) computing running balances and net closing balance with double-underline totals.
+  - **Direct Client-Side PDF Generation**: Exports vector-sharp A4 PDF files directly using `jsPDF` + `html2canvas` without requiring server rendering.
+  - **Mandi Kacha Slip**: Traditional physical yellow pad slip layout for thermal and market printers.
 * **Immutable Bills & Safe Cancellation**: Bills cannot be modified or deleted directly. Cancelling a bill requires a mandatory reason, reverses the stock ledger atomically, and writes to an audit log.
+
+### 2. Realistic Mandi Demo Mode
+* **Instant 1-Click Demo Login**: Pre-configured owner account (`trader@rtc.com`) loaded with realistic wholesale mandi data:
+  - **Business**: Radha Krishna Traders (RTC), Shop No. 14, APMC Market Yard No. 2, Grain & Spice Terminal, Unjha, Gujarat.
+  - **Parties**: Shree Ganesh Trading Co. (Jaipur), Mahadev Agri Commodities (Unjha), Patidar Spices & Seeds (Rajkot), Vardhman Dal & Oil Mills (Indore), Balaji Agro Agency (Jodhpur), Shree Karni Roadlines, and brokers.
+  - **Commodities**: Jeera Best Quality (Cumin), Mustard Seed Bold, Chana Desi, Wheat Sharbati, Coriander Eagle, Isabgol Grade A.
+  - **Bills**: Previous historical bills (#4445 through #4449) with bill #4449 ready to pre-fill for new bill #4450.
+  - **Ledger Inquiries**: Follow-ups categorized across Today, Upcoming, and Won/Done with live stock adequacy matching.
 
 ### 2. Piece-wise Stock Ledger
 * **Append-Only Ledger**: Stock is calculated strictly from `stock_movements` (Sales = negative, Purchases & Cancellations = positive). Current stock cannot be tampered with as a standalone mutable cell.

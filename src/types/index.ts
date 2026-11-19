@@ -19,6 +19,14 @@ export interface Business {
   bill_prefix: string;
   next_bill_no: number;
   created_at: string;
+  // Tally Prime & Banking metadata
+  bank_name?: string;
+  bank_account?: string;
+  bank_ifsc?: string;
+  bank_branch?: string;
+  state?: string;
+  state_code?: string;
+  email?: string;
 }
 
 export interface Party {
@@ -29,6 +37,8 @@ export interface Party {
   phone?: string;
   address?: string;
   gstin?: string;
+  state?: string;
+  state_code?: string;
   is_buyer: boolean;
   is_transporter: boolean;
   is_broker: boolean;
@@ -40,6 +50,8 @@ export interface Item {
   id: string;
   business_id: string;
   name: string;
+  code?: string;
+  hsn?: string;
   kg_per_piece: number;
   default_rate?: number;
   rate_unit: RateUnit;

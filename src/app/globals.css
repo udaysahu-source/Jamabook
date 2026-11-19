@@ -40,11 +40,17 @@
   background: #BCB4A3;
 }
 
-/* Print Styles for Screen 8 Kacha Mandi Invoice */
+/* Print Styles for Tally Prime Invoice & Ledger */
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm;
+  }
   body {
     background: white !important;
     color: black !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   .no-print {
     display: none !important;
@@ -54,9 +60,8 @@
   }
   .print-page {
     box-shadow: none !important;
-    border: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     max-width: 100% !important;
+    width: 100% !important;
   }
 }

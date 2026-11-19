@@ -242,10 +242,10 @@ export function BillSavedScreen() {
 
           <button
             onClick={handlePrint}
-            className="w-full bg-white border border-[#D9D2C3] hover:bg-[#F2ECE1] text-[#19221E] py-3 px-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
+            className="w-full bg-[#E7EFE9] border border-[#184E3A]/20 hover:bg-[#D5E4D8] text-[#184E3A] py-3 px-3 rounded-2xl font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
           >
-            <Printer className="w-4 h-4 text-[#56645E]" />
-            <span>Full Invoice Slip</span>
+            <Printer className="w-4 h-4 text-[#184E3A]" />
+            <span>Tally Invoice &amp; PDF</span>
           </button>
         </div>
 

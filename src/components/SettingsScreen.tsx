@@ -19,6 +19,7 @@ export function SettingsScreen() {
     invoices,
     stockMovements,
     clearLedger,
+    loadDemoData,
     addParty,
     addItem,
   } = useJamabook();
@@ -260,15 +261,26 @@ export function SettingsScreen() {
             </button>
           </div>
 
-          {/* Clean Ledger Action */}
-          <div className="pt-2 text-center">
+          {/* Demo & Clean Ledger Actions */}
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              onClick={() => {
+                loadDemoData();
+                alert('Loaded realistic Mandi demo data (Radha Krishna Traders - RTC)!');
+              }}
+              className="text-xs font-bold text-[#184E3A] bg-[#E7EFE9] hover:bg-[#D5E4D8] px-4 py-2 rounded-2xl flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Load Realistic Mandi Demo Data</span>
+            </button>
+
             <button
               onClick={() => {
                 if (confirm('Clear all ledger entries and start with a fresh clean state?')) {
                   clearLedger();
                 }
               }}
-              className="text-xs font-bold text-[#C25E1A] hover:underline flex items-center justify-center gap-1 mx-auto"
+              className="text-xs font-bold text-[#C25E1A] hover:underline flex items-center justify-center gap-1"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Clear Ledger Data</span>
