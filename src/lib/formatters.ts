@@ -1,5 +1,5 @@
 // src/lib/formatters.ts
-import { RateUnit } from '@/types';
+import type { RateUnit } from '../types/index.ts';
 
 /**
  * Format numbers using the Indian numbering system: ₹1,65,800
@@ -26,11 +26,22 @@ export function formatIndianNumber(num: number): string {
 }
 
 /**
- * Converts numeric amount to Indian English words:
- * e.g. 165800 -> "Rupees One Lakh Sixty-Five Thousand Eight Hundred Only"
+ * Format plain Indian number with two decimals: 1,23,456.00
  */
-export function amountToIndianWords(amount: number): string {
-  if (!amount || amount === 0) return 'Rupees Zero Only';
+export function formatIndianDecimals(num: number): string {
+  if (isNaN(num) || num === null || num === undefined) return '0.00';
+  return new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(num);
+}
+
+/**
+ * Converts numeric amount to Indian English words:
+ * e.g. 165800 -> "Indian Rupees One Lakh Sixty-Five Thousand Eight Hundred Only"
+ */
+export function amountToIndianWords(amount: number, prefix: string = 'Indian Rupees'): string {
+  if (!amount || amount === 0) return `${prefix} Zero Only`;
 
   const singleDigits = [
     '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
@@ -48,7 +59,7 @@ export function amountToIndianWords(amount: number): string {
     if (n < 10) return singleDigits[n];
     if (n < 20) return twoDigits[n - 10];
     const unit = n % 10;
-    return tens[Math.floor(n / 10)] + (unit ? ' ' + singleDigits[unit] : '');
+    return tens[Math.floor(n / 10)] + (unit ? '-' + singleDigits[unit] : '');
   }
 
   function convertThreeDigits(n: number): string {
@@ -87,7 +98,7 @@ export function amountToIndianWords(amount: number): string {
   const hundred = n;
   if (hundred > 0) parts.push(convertThreeDigits(hundred));
 
-  let words = 'Rupees ' + parts.join(' ');
+  let words = prefix + ' ' + parts.join(' ');
   if (paisePart > 0) {
     words += ' and ' + convertTwoDigits(paisePart) + ' Paise';
   }

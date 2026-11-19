@@ -49,6 +49,15 @@ export const BusinessProfileSchema = z.object({
     .optional(),
   bill_prefix: z.string().max(10).default(''),
   next_bill_no: z.number().int().positive('Next bill number must be greater than 0'),
+  bank_name: z.string().max(100).optional(),
+  bank_account: z.string().max(50).optional(),
+  bank_ifsc: z.string().max(20).optional(),
+  bank_branch: z.string().max(100).optional(),
+  state: z.string().max(50).optional(),
+  state_code: z.string().max(10).optional(),
+  email: z.string().email('Invalid email address').optional().or(z.literal('')),
+  is_onboarded: z.boolean().optional(),
+  logo_url: z.string().max(500).optional(),
 });
 
 // --- Master Data Schemas ---

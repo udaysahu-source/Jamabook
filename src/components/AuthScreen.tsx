@@ -81,7 +81,7 @@ export function AuthScreen() {
     }
   };
 
-  const handlePinUnlock = (e: React.FormEvent) => {
+  const handlePinUnlock = async (e: React.FormEvent) => {
     e.preventDefault();
     setFieldErrors({});
     setAuthError(null);
@@ -92,7 +92,9 @@ export function AuthScreen() {
       return;
     }
 
-    const ok = unlockWithPin(pin);
+    setIsLoading(true);
+    const ok = await unlockWithPin(pin);
+    setIsLoading(false);
     if (!ok) {
       setAuthError('Incorrect PIN');
     }
@@ -123,7 +125,7 @@ export function AuthScreen() {
         {/* Auth Card */}
         <div className="bg-white p-6 rounded-3xl border border-[#E5DFD1] shadow-sm space-y-4">
           {/* Mode Switcher */}
-          <div className="grid grid-cols-2 gap-1 bg-[#F1EBE1] p-1 rounded-2xl text-xs font-bold">
+          <div className="grid grid-cols-3 gap-1 bg-[#F1EBE1] p-1 rounded-2xl text-[11px] font-bold">
             <button
               type="button"
               onClick={() => {
@@ -142,6 +144,21 @@ export function AuthScreen() {
             <button
               type="button"
               onClick={() => {
+                setMode('pin');
+                setAuthError(null);
+                setFieldErrors({});
+              }}
+              className={`py-2 rounded-xl transition-all ${
+                mode === 'pin'
+                  ? 'bg-[#184E3A] text-white shadow-xs'
+                  : 'text-[#56645E] hover:text-[#19221E]'
+              }`}
+            >
+              PIN Unlock
+            </button>
+            <button
+              type="button"
+              onClick={() => {
                 setMode('signup');
                 setAuthError(null);
                 setFieldErrors({});
@@ -152,7 +169,7 @@ export function AuthScreen() {
                   : 'text-[#56645E] hover:text-[#19221E]'
               }`}
             >
-              New Business
+              New Firm
             </button>
           </div>
 
@@ -214,6 +231,45 @@ export function AuthScreen() {
                 className="w-full bg-[#184E3A] hover:bg-[#123E2E] active:scale-[0.98] text-white py-3 rounded-2xl font-black text-xs tracking-wide shadow-xs transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
               >
                 <span>{isLoading ? 'Verifying...' : 'Sign In to Ledger'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </form>
+          )}
+
+          {/* PIN UNLOCK FORM */}
+          {mode === 'pin' && (
+            <form onSubmit={handlePinUnlock} className="space-y-3.5">
+              <div>
+                <label className="text-xs font-bold text-[#56645E] block mb-1">
+                  4-Digit Security PIN *
+                </label>
+                <div className="relative">
+                  <input
+                    type="password"
+                    maxLength={4}
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                    placeholder="••••"
+                    className="w-full bg-[#FAF8F5] border border-[#D9D2C3] rounded-2xl pl-10 pr-3 py-2.5 text-center text-lg font-black tracking-widest text-[#19221E] focus:outline-none focus:border-[#184E3A]"
+                  />
+                  <KeyRound className="w-4 h-4 text-[#56645E] absolute left-3.5 top-3.5" />
+                </div>
+                {fieldErrors.pin && (
+                  <p className="text-[11px] font-bold text-red-600 mt-1">
+                    {fieldErrors.pin}
+                  </p>
+                )}
+                <span className="text-[10px] text-[#8C9892] block mt-1">
+                  Enter your device app lock PIN to unlock the ledger.
+                </span>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-[#184E3A] hover:bg-[#123E2E] active:scale-[0.98] text-white py-3 rounded-2xl font-black text-xs tracking-wide shadow-xs transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+              >
+                <span>{isLoading ? 'Unlocking...' : 'Unlock Ledger'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>

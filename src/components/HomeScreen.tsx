@@ -5,8 +5,10 @@ import React, { useState, useEffect } from 'react';
 import { useJamabook } from '@/context/JamabookContext';
 import { getT } from '@/lib/translations';
 import { formatCurrency, formatIndianNumber } from '@/lib/formatters';
-import { Plus, MessageCircle, ChevronRight, AlertCircle, PhoneCall } from 'lucide-react';
+import { todayIST } from '@/lib/dates';
+import { Plus, MessageCircle, ChevronRight, AlertCircle, PhoneCall, Sparkles } from 'lucide-react';
 import { Invoice } from '@/types';
+import { OnboardingModal } from './OnboardingModal';
 
 export function HomeScreen() {
   const {
@@ -20,21 +22,25 @@ export function HomeScreen() {
   } = useJamabook();
   const t = getT(language);
 
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
   // Stock summary
   const totalStockPieces = items.reduce((sum, item) => sum + (item.pieces_in_stock || 0), 0);
   const lowStockCount = items.filter(
     (item) => item.low_stock_pieces && (item.pieces_in_stock || 0) <= item.low_stock_pieces
   ).length;
 
-  // Follow-ups summary
+  // Follow-ups summary using Indian Standard Time
   const [todayStr, setTodayStr] = useState('2026-11-19');
   const [todayDisplay, setTodayDisplay] = useState('Thursday, 19 November');
 
   useEffect(() => {
+    const today = todayIST();
+    setTodayStr(today);
     const d = new Date();
-    setTodayStr(d.toISOString().split('T')[0]);
     setTodayDisplay(
       d.toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', {
+        timeZone: 'Asia/Kolkata',
         weekday: 'long',
         day: 'numeric',
         month: 'long',
@@ -59,14 +65,34 @@ export function HomeScreen() {
 
   const handleWhatsApp = (phone?: string, contactName?: string, note?: string) => {
     if (!phone) return;
-    const cleanPhone = phone.replace(/[^\d]/g, '');
+    const cleanDigits = phone.replace(/[^\d]/g, '');
+    const normalizedPhone = cleanDigits.length === 10 ? `91${cleanDigits}` : cleanDigits;
     const greeting = language === 'hi' ? 'नमस्ते' : 'Namaste';
-    const msg = `${greeting} ${contactName || 'ji'}, ${note || 'RTC Mandi se baat kar rahe hain. Stock aur rate update ke liye sampark karein.'}`;
-    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+    const msg = `${greeting} ${contactName || 'ji'}, ${note || `${business.name} se sampark kar rahe hain. Stock aur rate update ke liye batayein.`}`;
+    window.open(`https://wa.me/${normalizedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
   return (
     <div className="pb-24 pt-2 space-y-5 animate-fade-in">
+      {/* Onboarding Banner if not completed */}
+      {!business.is_onboarded && (
+        <div className="bg-[#E7EFE9] border border-[#184E3A]/20 p-3.5 rounded-2xl flex items-center justify-between shadow-2xs">
+          <div className="flex items-center gap-2.5">
+            <Sparkles className="w-5 h-5 text-[#184E3A]" />
+            <div>
+              <p className="font-bold text-xs text-[#184E3A]">Setup your Mandi Firm</p>
+              <p className="text-[11px] text-[#56645E]">Configure address, GSTIN and bank details for Tally bills</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowOnboarding(true)}
+            className="px-3 py-1.5 bg-[#184E3A] text-white rounded-xl text-xs font-bold shrink-0"
+          >
+            Setup
+          </button>
+        </div>
+      )}
+
       {/* 1. Greeting & Date */}
       <div>
         <h2 className="text-3xl font-extrabold text-[#19221E] tracking-tight">
@@ -301,6 +327,8 @@ export function HomeScreen() {
           )}
         </div>
       </div>
+
+      <OnboardingModal isOpen={showOnboarding} onClose={() => setShowOnboarding(false)} />
     </div>
   );
 }

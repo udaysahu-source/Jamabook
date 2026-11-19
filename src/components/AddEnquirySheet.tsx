@@ -258,7 +258,7 @@ export function AddEnquirySheet({ isOpen, onClose }: AddEnquirySheetProps) {
           </button>
 
           <p className="text-center text-[11px] font-semibold text-[#56645E]">
-            {t.weWillRemindYou} {reminderDisplayDate()}, 9:00 am
+            Follow-up scheduled on {reminderDisplayDate()}
           </p>
         </div>
       </div>

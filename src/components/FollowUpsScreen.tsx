@@ -5,12 +5,13 @@ import React, { useState, useEffect } from 'react';
 import { useJamabook } from '@/context/JamabookContext';
 import { getT } from '@/lib/translations';
 import { formatIndianNumber } from '@/lib/formatters';
+import { todayIST } from '@/lib/dates';
 import { AddEnquirySheet } from '@/components/AddEnquirySheet';
 import { MessageCircle, Phone, Clock, Check, Plus, AlertCircle } from 'lucide-react';
 import { Enquiry } from '@/types';
 
 export function FollowUpsScreen() {
-  const { language, enquiries, items, updateEnquiryStatus, snoozeEnquiry } = useJamabook();
+  const { language, enquiries, items, business, updateEnquiryStatus, snoozeEnquiry } = useJamabook();
   const t = getT(language);
 
   const [activeTab, setActiveTab] = useState<'today' | 'upcoming' | 'done'>('today');
@@ -20,7 +21,7 @@ export function FollowUpsScreen() {
   const [todayStr, setTodayStr] = useState('2026-11-19');
 
   useEffect(() => {
-    setTodayStr(new Date().toISOString().split('T')[0]);
+    setTodayStr(todayIST());
   }, []);
 
   // Partition enquiries into Today, Upcoming, and Done
@@ -42,14 +43,17 @@ export function FollowUpsScreen() {
       : doneEnquiries;
 
   const handleWhatsApp = (enq: Enquiry) => {
-    const cleanPhone = (enq.phone || '').replace(/[^\d]/g, '');
+    const rawPhone = (enq.phone || '').replace(/[^\d]/g, '');
+    if (!rawPhone) {
+      alert('No phone number recorded for this contact.');
+      return;
+    }
+    const normalizedPhone = rawPhone.length === 10 ? `91${rawPhone}` : rawPhone;
     const item = items.find((i) => i.id === enq.item_id);
     const greeting = language === 'hi' ? 'नमस्ते' : 'Namaste';
-    const msg = `${greeting} ${enq.contact_name} ji,\nRegarding your inquiry for ${enq.pieces_wanted} pcs of ${item?.name || 'goods'}.\nWe have stock ready for immediate delivery. Current rate is ₹${formatIndianNumber(item?.default_rate || 0)}/${item?.rate_unit === 'per_quintal' ? 'qtl' : 'bag'}.\nShould we book and dispatch today? - RTC`;
+    const msg = `${greeting} ${enq.contact_name} ji,\nRegarding your inquiry for ${enq.pieces_wanted} pcs of ${item?.name || 'goods'}.\nWe have stock ready for immediate delivery. Current rate is ₹${formatIndianNumber(item?.default_rate || 0)}/${item?.rate_unit === 'per_quintal' ? 'qtl' : 'bag'}.\nShould we book and dispatch today? - ${business.name}`;
 
-    const url = cleanPhone
-      ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`
-      : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+    const url = `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
   };
 

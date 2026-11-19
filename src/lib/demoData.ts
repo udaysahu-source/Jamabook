@@ -19,6 +19,7 @@ export const DEMO_BUSINESS: Business = {
   state: 'Gujarat',
   state_code: '24',
   email: 'info@rtc-mandi.com',
+  is_onboarded: true,
 };
 
 export const DEMO_PARTIES: Party[] = [

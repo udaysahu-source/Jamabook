@@ -4,8 +4,11 @@
 import React, { useState } from 'react';
 import { useJamabook } from '@/context/JamabookContext';
 import { getT } from '@/lib/translations';
-import { Download, Building2, Users, Package, RefreshCw, Plus, Check } from 'lucide-react';
+import { Download, Building2, Users, Package, RefreshCw, Plus, Check, Edit3, KeyRound } from 'lucide-react';
 import { formatIndianNumber } from '@/lib/formatters';
+import { generateCsv } from '@/lib/csv';
+import { todayIST } from '@/lib/dates';
+import { OnboardingModal } from './OnboardingModal';
 
 export function SettingsScreen() {
   const {
@@ -22,10 +25,16 @@ export function SettingsScreen() {
     loadDemoData,
     addParty,
     addItem,
+    hasPinSetup,
+    configureAppPin,
+    clearAppPin,
   } = useJamabook();
   const t = getT(language);
 
   const [activeTab, setActiveTab] = useState<'biz' | 'parties' | 'items' | 'export'>('biz');
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+  const [newPin, setNewPin] = useState('');
+  const [pinSuccessMsg, setPinSuccessMsg] = useState<string | null>(null);
 
   // New Party State
   const [showAddParty, setShowAddParty] = useState(false);
@@ -73,22 +82,7 @@ export function SettingsScreen() {
     setIName('');
   };
 
-  const exportCSV = (data: any[], filename: string) => {
-    if (data.length === 0) return;
-    const headers = Object.keys(data[0]);
-    const csvContent = [
-      headers.join(','),
-      ...data.map((row) =>
-        headers
-          .map((h) => {
-            const val = row[h];
-            if (val === null || val === undefined) return '';
-            return `"${String(val).replace(/"/g, '""')}"`;
-          })
-          .join(',')
-      ),
-    ].join('\n');
-
+  const downloadCsvFile = (csvContent: string, filename: string) => {
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -99,32 +93,50 @@ export function SettingsScreen() {
   };
 
   const handleExportInvoices = () => {
-    const rows = invoices.map((inv) => ({
-      'Bill No': inv.bill_no,
-      Date: inv.bill_date,
-      Buyer: inv.buyer_name,
-      Town: inv.buyer_town || '',
-      Transport: inv.transporter_name || '',
-      Subtotal: inv.subtotal,
-      'Extra Charges': inv.extra_charges,
-      Total: inv.total,
-      Status: inv.status,
-    }));
-    exportCSV(rows, `RTC-Invoices-${new Date().toISOString().split('T')[0]}.csv`);
+    if (invoices.length === 0) {
+      alert('No invoices to export');
+      return;
+    }
+    const columns = [
+      { key: 'bill_no', label: 'Bill No' },
+      { key: 'bill_date', label: 'Date' },
+      { key: 'buyer_name', label: 'Buyer' },
+      { key: 'buyer_town', label: 'Town' },
+      { key: 'transporter_name', label: 'Transporter' },
+      { key: 'vehicle_no', label: 'Vehicle No' },
+      { key: 'subtotal', label: 'Material Amount (Rs)' },
+      { key: 'extra_charges', label: 'Extra Charges (Rs)' },
+      { key: 'total', label: 'Total (Rs)' },
+      { key: 'status', label: 'Status' },
+    ];
+    const csv = generateCsv(columns, invoices);
+    downloadCsvFile(csv, `Invoices-${todayIST()}.csv`);
   };
 
   const handleExportStock = () => {
+    if (stockMovements.length === 0) {
+      alert('No stock movements to export');
+      return;
+    }
     const rows = stockMovements.map((mov) => {
       const it = items.find((i) => i.id === mov.item_id);
       return {
-        Date: mov.moved_on,
-        Material: it?.name || mov.item_id,
-        Pieces: mov.pieces,
-        Type: mov.movement_type,
-        Note: mov.note || '',
+        date: mov.moved_on,
+        material: it?.name || mov.item_name || 'Item',
+        pieces: mov.pieces,
+        type: mov.movement_type,
+        note: mov.note || '',
       };
     });
-    exportCSV(rows, `RTC-Stock-Ledger-${new Date().toISOString().split('T')[0]}.csv`);
+    const columns = [
+      { key: 'date', label: 'Date' },
+      { key: 'material', label: 'Material' },
+      { key: 'pieces', label: 'Pieces (Bags)' },
+      { key: 'type', label: 'Movement Type' },
+      { key: 'note', label: 'Notes / Reason' },
+    ];
+    const csv = generateCsv(columns, rows);
+    downloadCsvFile(csv, `Stock-Ledger-${todayIST()}.csv`);
   };
 
   return (
@@ -187,16 +199,27 @@ export function SettingsScreen() {
       {activeTab === 'biz' && (
         <div className="space-y-3.5">
           <div className="bg-white p-4.5 rounded-3xl border border-[#E5DFD1] shadow-xs space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-[#184E3A] text-white flex items-center justify-center font-black text-lg shadow-sm">
-                RTC
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#184E3A] text-white flex items-center justify-center font-black text-lg shadow-sm">
+                  {business.name.slice(0, 3).toUpperCase()}
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-[#19221E]">
+                    {business.name}
+                  </h3>
+                  <p className="text-xs text-[#56645E] font-medium">Wholesale Mandi Trader</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-extrabold text-base text-[#19221E]">
-                  {business.name}
-                </h3>
-                <p className="text-xs text-[#56645E] font-medium">Grain & Mandi Trader</p>
-              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowEditProfileModal(true)}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#F2ECE1] text-[#184E3A] font-bold text-xs hover:bg-[#E5DFD1] transition-colors"
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                <span>Edit</span>
+              </button>
             </div>
 
             <div className="space-y-2 text-xs pt-1 border-t border-[#F2ECE1]">
@@ -245,6 +268,70 @@ export function SettingsScreen() {
             >
               Log Out of Account
             </button>
+          </div>
+
+          {/* App Lock PIN Card */}
+          <div className="bg-white p-4 rounded-3xl border border-[#E5DFD1] shadow-xs space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-[#F2ECE1] text-[#184E3A] flex items-center justify-center">
+                  <KeyRound className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-xs text-[#19221E]">Device App Lock PIN</h4>
+                  <p className="text-[10px] text-[#56645E]">
+                    {hasPinSetup ? '4-digit salted PIN is active' : 'No PIN configured'}
+                  </p>
+                </div>
+              </div>
+              {hasPinSetup && (
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                  Active
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="password"
+                maxLength={4}
+                value={newPin}
+                onChange={(e) => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                placeholder="4-digit PIN"
+                className="w-28 bg-[#FAF8F5] border border-[#D9D2C3] rounded-xl px-3 py-1.5 text-center text-sm font-bold tracking-widest text-[#19221E] focus:outline-none focus:border-[#184E3A]"
+              />
+              <button
+                type="button"
+                onClick={async () => {
+                  if (newPin.length === 4) {
+                    await configureAppPin(newPin);
+                    setNewPin('');
+                    setPinSuccessMsg('PIN updated successfully!');
+                    setTimeout(() => setPinSuccessMsg(null), 3000);
+                  }
+                }}
+                disabled={newPin.length !== 4}
+                className="px-3 py-1.5 bg-[#184E3A] disabled:opacity-40 text-white font-bold text-xs rounded-xl hover:bg-[#123E2E] transition-all"
+              >
+                Set PIN
+              </button>
+              {hasPinSetup && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearAppPin();
+                    setPinSuccessMsg('PIN removed');
+                    setTimeout(() => setPinSuccessMsg(null), 3000);
+                  }}
+                  className="px-2.5 py-1.5 bg-gray-100 text-[#56645E] font-bold text-xs rounded-xl hover:bg-gray-200 transition-all"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+            {pinSuccessMsg && (
+              <p className="text-[11px] font-bold text-emerald-700">{pinSuccessMsg}</p>
+            )}
           </div>
 
           {/* Language Selector */}
@@ -517,6 +604,11 @@ export function SettingsScreen() {
           </div>
         </div>
       )}
+
+      <OnboardingModal
+        isOpen={showEditProfileModal}
+        onClose={() => setShowEditProfileModal(false)}
+      />
     </div>
   );
 }

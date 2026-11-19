@@ -25,6 +25,13 @@ import {
   BusinessProfileSchema,
 } from '@/lib/validations';
 import {
+  verifyAppLockPin,
+  setAppLockPin,
+  hasAppLockPinSet,
+  removeAppLockPin,
+} from '@/lib/appLock';
+import { todayIST } from '@/lib/dates';
+import {
   DEMO_BUSINESS,
   DEMO_PARTIES,
   DEMO_ITEMS,
@@ -62,7 +69,9 @@ interface JamabookContextType {
   login: (email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
   signup: (data: { email: string; password: string; businessName: string; startingBillNo: number }) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
-  unlockWithPin: (pin: string) => boolean;
+  unlockWithPin: (pin: string) => Promise<boolean>;
+  configureAppPin: (newPin: string) => Promise<void>;
+  clearAppPin: () => void;
   createInvoice: (data: {
     buyer_id: string;
     buyer_name: string;
@@ -121,6 +130,7 @@ export function JamabookProvider({ children }: { children: React.ReactNode }) {
     gstin: '36AABCR1234F1Z5',
     bill_prefix: '',
     next_bill_no: 4450,
+    is_onboarded: true,
     created_at: '2026-01-01T00:00:00Z',
   });
 
@@ -170,6 +180,9 @@ export function JamabookProvider({ children }: { children: React.ReactNode }) {
             setEnquiries(DEMO_ENQUIRIES);
           }
         }
+      }
+      if (hasAppLockPinSet()) {
+        setHasPinSetup(true);
       }
     } catch {
       // Storage unavailable
@@ -271,7 +284,8 @@ export function JamabookProvider({ children }: { children: React.ReactNode }) {
       name: data.businessName,
       bill_prefix: '',
       next_bill_no: data.startingBillNo,
-      created_at: new Date().toISOString(),
+      is_onboarded: false,
+      created_at: todayIST(),
     };
 
     const newUser: AppUser = {
@@ -304,8 +318,34 @@ export function JamabookProvider({ children }: { children: React.ReactNode }) {
     setActiveView('home');
   };
 
-  const unlockWithPin = (pin: string) => {
-    return pin === '1234' || pin === '4450';
+  const unlockWithPin = async (pin: string): Promise<boolean> => {
+    const ok = await verifyAppLockPin(pin);
+    if (ok) {
+      const savedAuth = localStorage.getItem(AUTH_KEY);
+      if (savedAuth) {
+        try {
+          const parsed = JSON.parse(savedAuth);
+          if (parsed?.user) {
+            setUser(parsed.user);
+            setToken(parsed.token || `mock-token::${parsed.user.id}`);
+            return true;
+          }
+        } catch {}
+      }
+      loadDemoData();
+      return true;
+    }
+    return false;
+  };
+
+  const configureAppPin = async (newPin: string): Promise<void> => {
+    await setAppLockPin(newPin);
+    setHasPinSetup(true);
+  };
+
+  const clearAppPin = (): void => {
+    removeAppLockPin();
+    setHasPinSetup(false);
   };
 
   const getLastBillForBuyer = (buyerId: string): Invoice | null => {
@@ -688,14 +728,12 @@ export function JamabookProvider({ children }: { children: React.ReactNode }) {
       return { success: false, error: 'Only owners can modify business profile' };
     }
 
-    const validation = BusinessProfileSchema.safeParse({
-      name: updates.name ?? business.name,
-      address: updates.address ?? business.address,
-      phone: updates.phone ?? business.phone,
-      gstin: updates.gstin ?? business.gstin,
-      bill_prefix: updates.bill_prefix ?? business.bill_prefix,
-      next_bill_no: updates.next_bill_no ?? business.next_bill_no,
-    });
+    const merged = {
+      ...business,
+      ...updates,
+    };
+
+    const validation = BusinessProfileSchema.safeParse(merged);
 
     if (!validation.success) {
       return { success: false, error: validation.error.issues[0]?.message };
@@ -738,6 +776,8 @@ export function JamabookProvider({ children }: { children: React.ReactNode }) {
         signup,
         logout,
         unlockWithPin,
+        configureAppPin,
+        clearAppPin,
         createInvoice,
         cancelInvoice,
         addStockIn,

@@ -27,48 +27,62 @@ Built following the [frontend-design](.agent/skills/frontend-design.md) specific
 ## 🚀 Key Features
 
 ### 1. High-Speed Digital Billing (< 30s)
-* **Atomic Bill Numbering**: Continuous atomic counter managed by the database (starting from `#4450`), matching handwritten T.P. slips.
+* **Atomic Bill Numbering**: Continuous atomic counter managed by the database, matching handwritten T.P. slips with custom prefix support.
 * **Contextual Pre-Filling**: Automatically detects repeating buyers and offers 1-tap pre-fill from their last bill (*e.g. #4449*).
 * **Multi-Unit Live Calculation**:
   $$\text{50 pieces} \times \text{30 kg} = \text{1,500 kg} = \text{15 quintals} \times ₹11,050/\text{qtl} \longrightarrow ₹1,65,750$$
   Segmented toggles switch effortlessly between `per quintal`, `per kg`, and `per piece`.
 * **Snapshot Preservation**: Bills capture immutable historical snapshots of buyer names, towns, commodity prices, and units so master data edits never distort past accounting.
-* **Instant WhatsApp Sharing**: Generates pre-formatted `wa.me` links with bill details and amounts ready to send.
-* **Tally Prime Invoice & Party Ledger PDF Templates**:
-  - **Tally Prime Tax Invoice**: Features the classic Tally accounting grid layout, seller/buyer metadata, HSN codes, quantity in bags and quintals, rate per qtl, extra mandi charges (Freight, Hammali, Mandi Cess), company bank details (SBI), legal declaration, and authorized signatory stamp area.
-  - **Tally Prime Party Ledger Statement (खाता नकल)**: Complete 6-column statement of accounts (`Date`, `Particulars`, `Vch Type`, `Vch No`, `Debit`, `Credit`) computing running balances and net closing balance with double-underline totals.
-  - **Direct Client-Side PDF Generation**: Exports vector-sharp A4 PDF files directly using `jsPDF` + `html2canvas` without requiring server rendering.
-  - **Mandi Kacha Slip**: Traditional physical yellow pad slip layout for thermal and market printers.
-* **Immutable Bills & Safe Cancellation**: Bills cannot be modified or deleted directly. Cancelling a bill requires a mandatory reason, reverses the stock ledger atomically, and writes to an audit log.
+* **Instant WhatsApp Sharing**: Generates pre-formatted `wa.me` links with normalized Indian phone numbers (`91XXXXXXXXXX`) and amounts ready to send.
+* **Tally-Style Monochrome PDF Generation**:
+  - **Authentic Tally Prime Invoice Grid**: Thin black bordered table (`border border-black`), plain Arial/Helvetica font, zero decorative color slop.
+  - **Dynamic Seller & Buyer Blocks**: Dynamic seller header, invoice no./date on right, buyer "Bill to" and "Ship to" blocks with GSTIN and state codes.
+  - **Exact Accounting Columns**: `Sl No`, `Description of Goods`, `HSN/SAC`, `Quantity` (bags & quintals), `Rate`, `per`, `Amount`.
+  - **GST Rows & Running Totals**: Explicit CGST, SGST, IGST calculation and double-underlined total in Indian decimals (`1,23,456.00`).
+  - **Amount in Words**: Formal Indian Rupee currency words (`"Indian Rupees One Lakh Sixty-Five Thousand Eight Hundred Only"`).
+  - **Bank Details & Legal Declaration**: Dynamic company bank account (SBI/HDFC), IFSC, APMC branch, standard declaration, and authorised signatory box.
+  - **Double-Click Prevention**: PDF download button automatically shows "Generating..." with a spinner and disables duplicate clicks.
+* **Immutable Bills & Safe Cancellation**: Bills cannot be modified or deleted directly. Cancelling a bill requires a mandatory reason (3–200 characters), reverses the stock ledger atomically, and writes to an audit log.
 
-### 2. Realistic Mandi Demo Mode
+### 2. Multi-Tenancy & Business Onboarding
+* **Multi-Tenant Data Isolation**: Every invoice, customer, item, and ledger entry is tied to a `business_id` secured via Supabase Row-Level Security (RLS).
+* **3-Step Business Onboarding**:
+  - Step 1: Firm Name, APMC Yard Address, Phone, Email, GSTIN, State & State Code.
+  - Step 2: Bill Prefix & Starting Slip Number.
+  - Step 3: Company Bank Account, IFSC, Branch, and Authorized Signatory details.
+* **Dynamic PDF & Slip Branding**: Invoices dynamically render the onboarded firm's name and banking details instead of hardcoded strings.
+* **Salted Device App Lock PIN**: PBKDF2 WebCrypto client-side salted PIN lock (`src/lib/appLock.ts`) with zero hardcoded mock PINs (`1234`, `4450` eliminated).
+
+### 3. Realistic Mandi Demo Mode
 * **Instant 1-Click Demo Login**: Pre-configured owner account (`trader@rtc.com`) loaded with realistic wholesale mandi data:
   - **Business**: Radha Krishna Traders (RTC), Shop No. 14, APMC Market Yard No. 2, Grain & Spice Terminal, Unjha, Gujarat.
   - **Parties**: Shree Ganesh Trading Co. (Jaipur), Mahadev Agri Commodities (Unjha), Patidar Spices & Seeds (Rajkot), Vardhman Dal & Oil Mills (Indore), Balaji Agro Agency (Jodhpur), Shree Karni Roadlines, and brokers.
   - **Commodities**: Jeera Best Quality (Cumin), Mustard Seed Bold, Chana Desi, Wheat Sharbati, Coriander Eagle, Isabgol Grade A.
   - **Bills**: Previous historical bills (#4445 through #4449) with bill #4449 ready to pre-fill for new bill #4450.
   - **Ledger Inquiries**: Follow-ups categorized across Today, Upcoming, and Won/Done with live stock adequacy matching.
+* **Build Safeguard**: Production build strictly fails if `NEXT_PUBLIC_DEMO=true` in production environments.
 
-### 2. Piece-wise Stock Ledger
+### 4. Piece-wise Stock Ledger
 * **Append-Only Ledger**: Stock is calculated strictly from `stock_movements` (Sales = negative, Purchases & Cancellations = positive). Current stock cannot be tampered with as a standalone mutable cell.
 * **Dual Metrics**: Displays both total pieces/bags in hand and equivalent metric kilograms.
 * **Low-Stock Alerts**: Real-time visual alerts when items fall below their minimum buffer.
 * **Stock In & Audit Adjustments**: Quick modals to record supplier purchases or physical bag recount corrections.
 
-### 3. WhatsApp Follow-ups & Reminders
+### 5. WhatsApp Follow-ups & Reminders
 * **Lead Tracking**: Captures buyer inquiries received via WhatsApp with requested quantities and materials.
 * **Live Stock Comparison**: Instantly matches inquiry quantities against current stock (*e.g. "In stock: 100 pcs · enough"* vs *"Only 8 in stock · 12 short"*).
 * **Urgency Badges**: Flags overdue inquiries (*"1 day late"*).
 * **Quick Actions**: One-tap WhatsApp chat opener, phone dialer (`tel:`), snooze (+1, +3, +7 days), and mark won/done.
 
-### 4. RTC Telegram Bot Simulator (SPEC Phase 5)
+### 6. RTC Telegram Bot Simulator (SPEC Phase 5)
 * An interactive simulation of the upcoming Telegram voice/text message ingestion:
   - Input: *"Boina Vardharaju, Nav Transport, Mung Prestige Pro 50 x 30kg @11050 per quintal, extra 50"*
   - AI parses the text, matches against master party and item lists, and generates a draft bill preview.
   - Interactive `[Confirm]`, `[Edit]`, and `[Cancel]` buttons. Nothing touches the database until the owner confirms.
 
-### 5. 1-Tap Excel & CSV Data Export
+### 7. Sanitized Data Export (OWASP Formula Injection Protected)
 * Instant spreadsheet export for Invoices, Stock Ledger movements, and Registered Parties.
+* Protects against CSV formula injection by escaping risky leading characters (`=`, `+`, `-`, `@`, `\t`, `\r`).
 
 ---
 
@@ -169,10 +183,33 @@ npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) in your browser (or on your phone over the local network).
 
-### 5. Production Build
+### 5. Run Automated Unit Tests
+```bash
+npm test
+```
+Runs Node's built-in native test runner executing all 13 core business logic and math invariant tests without external test bloat:
+* Indian currency amount calculation (per quintal, per kg, per piece).
+* Indian numbers to formal English words conversion (`"Indian Rupees One Lakh..."`).
+* Indian standard numbering format with two decimals (`1,23,456.00`).
+* Asia/Kolkata timezone rollover handling (`todayIST()`).
+* CSV formula injection sanitization.
+
+### 6. Production Build & Health Check
 ```bash
 npm run build
 npm run start
+```
+Check health status via:
+```bash
+curl http://localhost:3000/api/health
+# Returns: {"ok":true,"db":true}
+```
+
+### 7. Encrypted Database Backups
+```bash
+# Uses scripts/backup.sh with pg_dump and optional age/gzip encryption
+export DB_BACKUP_KEY="recipient-pubkey" # optional
+./scripts/backup.sh
 ```
 
 ---

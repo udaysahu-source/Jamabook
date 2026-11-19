@@ -18,6 +18,7 @@ export function BillSavedScreen() {
     setSelectedInvoice,
     cancelInvoice,
     items,
+    business,
   } = useJamabook();
   const t = getT(language);
 
@@ -27,6 +28,7 @@ export function BillSavedScreen() {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState('Party requested cancellation');
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   // Trigger celebration confetti on mount
   useEffect(() => {
@@ -63,12 +65,13 @@ export function BillSavedScreen() {
   const previousStock = currentStock + (mainLine?.pieces || 0);
 
   const handleShareWhatsApp = () => {
-    const buyerPhone = (invoice.buyer_phone || '').replace(/[^\d]/g, '');
+    const cleanDigits = (invoice.buyer_phone || '').replace(/[^\d]/g, '');
+    const normalizedPhone = cleanDigits.length === 10 ? `91${cleanDigits}` : cleanDigits;
     const dateFormatted = formatDate(invoice.bill_date, 'short');
-    const msg = `*RTC - Bill No. ${invoice.bill_no}*\nDate: ${dateFormatted}\nParty: ${invoice.buyer_name}${invoice.buyer_town ? `, ${invoice.buyer_town}` : ''}\nTransport: ${invoice.transporter_name || 'Direct'}\nTotal: ₹${formatIndianNumber(invoice.total)}\n\nThank you for your business!`;
+    const msg = `*${business.name} - Bill No. ${invoice.bill_no}*\nDate: ${dateFormatted}\nParty: ${invoice.buyer_name}${invoice.buyer_town ? `, ${invoice.buyer_town}` : ''}\nTransport: ${invoice.transporter_name || 'Direct'}\nTotal: ₹${formatIndianNumber(invoice.total)}\n\nThank you for your business!`;
 
-    const url = buyerPhone
-      ? `https://wa.me/${buyerPhone}?text=${encodeURIComponent(msg)}`
+    const url = normalizedPhone
+      ? `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(msg)}`
       : `https://wa.me/?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
   };
@@ -131,7 +134,7 @@ export function BillSavedScreen() {
         {/* Brand Header */}
         <div className="text-center pb-1">
           <span className="text-xl font-black tracking-widest text-[#19221E] uppercase inline-block pb-1 border-b-2 border-[#184E3A]">
-            RTC
+            {business.name}
           </span>
         </div>
 

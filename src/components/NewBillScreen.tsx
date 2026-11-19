@@ -6,7 +6,8 @@ import { useJamabook } from '@/context/JamabookContext';
 import { getT } from '@/lib/translations';
 import { RateUnit } from '@/types';
 import { formatCurrency, formatIndianNumber, calculateLineAmount } from '@/lib/formatters';
-import { ArrowLeft, Check, ChevronDown, Plus, X } from 'lucide-react';
+import { todayIST } from '@/lib/dates';
+import { ArrowLeft, Check, ChevronDown, Plus, X, Loader2 } from 'lucide-react';
 
 interface LineState {
   item_id: string;
@@ -45,9 +46,11 @@ export function NewBillScreen() {
   );
   const [selectedBroker, setSelectedBroker] = useState('');
   const [billDate, setBillDate] = useState('2026-11-19');
+  const [clientRequestId] = useState(() => (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `req-${Date.now()}`));
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    setBillDate(new Date().toISOString().split('T')[0]);
+    setBillDate(todayIST());
   }, []);
   const [vehicleNo, setVehicleNo] = useState('');
   const [lastBillNoUsed, setLastBillNoUsed] = useState<number | null>(4449);
@@ -186,6 +189,9 @@ export function NewBillScreen() {
       return;
     }
 
+    if (isSaving) return;
+    setIsSaving(true);
+
     const transporterObj = transporters.find((t) => t.name === selectedTransporter);
     const brokerObj = brokers.find((b) => b.name === selectedBroker);
 
@@ -204,6 +210,7 @@ export function NewBillScreen() {
       charges: numericExtra > 0 ? [{ label: extraLabel || 'Extra', amount: numericExtra }] : [],
     });
 
+    setIsSaving(false);
     if (!result.success) {
       setErrorMessage(result.error || 'Failed to save bill');
     }
@@ -621,10 +628,20 @@ export function NewBillScreen() {
 
           <button
             onClick={handleSaveBill}
-            className="flex-1 max-w-[200px] bg-[#184E3A] hover:bg-[#123E2E] active:scale-[0.98] text-white py-3.5 px-5 rounded-2xl font-extrabold text-sm tracking-wide shadow-sm flex items-center justify-center gap-1.5 transition-all"
+            disabled={isSaving}
+            className="flex-1 max-w-[200px] bg-[#184E3A] hover:bg-[#123E2E] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white py-3.5 px-5 rounded-2xl font-extrabold text-sm tracking-wide shadow-sm flex items-center justify-center gap-1.5 transition-all"
           >
-            <span>{t.saveAndShare}</span>
-            <span className="text-base font-bold">›</span>
+            {isSaving ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Saving...</span>
+              </>
+            ) : (
+              <>
+                <span>{t.saveAndShare}</span>
+                <span className="text-base font-bold">›</span>
+              </>
+            )}
           </button>
         </div>
       </div>

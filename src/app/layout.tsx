@@ -15,8 +15,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   themeColor: '#184E3A',
 };
 
@@ -36,7 +34,10 @@ export default function RootLayout({
         />
       </head>
       <body className="h-full font-['Plus_Jakarta_Sans',sans-serif] text-[#19221E] antialiased selection:bg-[#184E3A] selection:text-white">
-        <JamabookProvider>{children}</JamabookProvider>
+        {/* Instant SSR splash that React replaces smoothly on mount */}
+        <div id="initial-splash" className="contents">
+          <JamabookProvider>{children}</JamabookProvider>
+        </div>
       </body>
     </html>
   );

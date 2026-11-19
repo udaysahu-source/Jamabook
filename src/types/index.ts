@@ -27,6 +27,8 @@ export interface Business {
   state?: string;
   state_code?: string;
   email?: string;
+  logo_url?: string;
+  is_onboarded?: boolean;
 }
 
 export interface Party {
