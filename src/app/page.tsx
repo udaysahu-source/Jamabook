@@ -1,10 +1,10 @@
 // src/app/page.tsx
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useJamabook } from '@/context/JamabookContext';
 import { AuthScreen } from '@/components/AuthScreen';
-import { TopHeader, BottomNav } from '@/components/Navbar';
+import { TopHeader, SidebarNav, BottomNav } from '@/components/Navbar';
 import { HomeScreen } from '@/components/HomeScreen';
 import { NewBillScreen } from '@/components/NewBillScreen';
 import { BillSavedScreen } from '@/components/BillSavedScreen';
@@ -15,7 +15,59 @@ import { SettingsScreen } from '@/components/SettingsScreen';
 import { KachaInvoiceSlip } from '@/components/KachaInvoiceSlip';
 
 export default function App() {
-  const { user, activeView } = useJamabook();
+  const { user, activeView, setActiveView } = useJamabook();
+
+  // Desktop Mandi Keyboard Shortcuts
+  useEffect(() => {
+    if (!user) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is currently typing inside an input, textarea, or select
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT' ||
+          target.isContentEditable)
+      ) {
+        if (e.key === 'Escape') {
+          target.blur();
+        }
+        return;
+      }
+
+      // Hotkeys:
+      // F2 or N -> New Bill
+      if (e.key === 'F2' || e.key === 'n' || e.key === 'N') {
+        e.preventDefault();
+        setActiveView('bill-new');
+      } else if (e.key === 'h' || e.key === 'H') {
+        e.preventDefault();
+        setActiveView('home');
+      } else if (e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        setActiveView('stock');
+      } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        setActiveView('follow-ups');
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        setActiveView('bot');
+      } else if (e.key === 'g' || e.key === 'G') {
+        e.preventDefault();
+        setActiveView('settings');
+      } else if (e.key === 'Escape') {
+        if (activeView !== 'home') {
+          e.preventDefault();
+          setActiveView('home');
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [user, activeView, setActiveView]);
 
   // Authentication Gate: Require user login/signup before accessing trader data
   if (!user) {
@@ -23,24 +75,30 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F5EE] text-[#19221E] flex flex-col font-sans selection:bg-[#184E3A] selection:text-white">
-      {/* Top Header */}
-      <TopHeader />
+    <div className="min-h-screen bg-[#F8F5EE] text-[#19221E] flex flex-col lg:flex-row font-sans selection:bg-[#184E3A] selection:text-white">
+      {/* Desktop Sidebar Navigation */}
+      <SidebarNav />
 
-      {/* Main Container - Phone Frame styled */}
-      <main className="flex-1 w-full max-w-md mx-auto px-4 pt-3 pb-8">
-        {activeView === 'home' && <HomeScreen />}
-        {activeView === 'bill-new' && <NewBillScreen />}
-        {activeView === 'bill-saved' && <BillSavedScreen />}
-        {activeView === 'stock' && <StockScreen />}
-        {activeView === 'follow-ups' && <FollowUpsScreen />}
-        {activeView === 'bot' && <TelegramBotSimulator />}
-        {activeView === 'settings' && <SettingsScreen />}
-        {activeView === 'invoice-view' && <KachaInvoiceSlip />}
-      </main>
+      {/* Main App Container */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Mobile/Tablet Top Header */}
+        <TopHeader />
 
-      {/* Bottom Sticky Mobile Navigation */}
-      <BottomNav />
+        {/* Responsive Content Area */}
+        <main className="flex-1 w-full max-w-md md:max-w-3xl lg:max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 md:pt-5 pb-24 lg:pb-12">
+          {activeView === 'home' && <HomeScreen />}
+          {activeView === 'bill-new' && <NewBillScreen />}
+          {activeView === 'bill-saved' && <BillSavedScreen />}
+          {activeView === 'stock' && <StockScreen />}
+          {activeView === 'follow-ups' && <FollowUpsScreen />}
+          {activeView === 'bot' && <TelegramBotSimulator />}
+          {activeView === 'settings' && <SettingsScreen />}
+          {activeView === 'invoice-view' && <KachaInvoiceSlip />}
+        </main>
+
+        {/* Mobile Sticky Bottom Navigation */}
+        <BottomNav />
+      </div>
     </div>
   );
 }

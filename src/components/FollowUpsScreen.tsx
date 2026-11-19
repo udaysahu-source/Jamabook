@@ -7,16 +7,29 @@ import { getT } from '@/lib/translations';
 import { formatIndianNumber } from '@/lib/formatters';
 import { todayIST } from '@/lib/dates';
 import { AddEnquirySheet } from '@/components/AddEnquirySheet';
-import { MessageCircle, Phone, Clock, Check, Plus, AlertCircle } from 'lucide-react';
+import {
+  MessageCircle,
+  Phone,
+  Clock,
+  Check,
+  Plus,
+  AlertCircle,
+  Search,
+  Send,
+  User,
+  Sparkles,
+} from 'lucide-react';
 import { Enquiry } from '@/types';
 
 export function FollowUpsScreen() {
-  const { language, enquiries, items, business, updateEnquiryStatus, snoozeEnquiry } = useJamabook();
+  const { language, enquiries, items, business, updateEnquiryStatus, snoozeEnquiry, setActiveView } = useJamabook();
   const t = getT(language);
 
   const [activeTab, setActiveTab] = useState<'today' | 'upcoming' | 'done'>('today');
+  const [searchQuery, setSearchQuery] = useState('');
   const [isAddEnquiryOpen, setIsAddEnquiryOpen] = useState(false);
   const [snoozeTargetId, setSnoozeTargetId] = useState<string | null>(null);
+  const [selectedEnquiryId, setSelectedEnquiryId] = useState<string | null>(null);
 
   const [todayStr, setTodayStr] = useState('2026-11-19');
 
@@ -35,14 +48,28 @@ export function FollowUpsScreen() {
     (e) => e.status === 'won' || e.status === 'lost' || e.status === 'quoted'
   );
 
-  const currentList =
+  const currentPartition =
     activeTab === 'today'
       ? todayEnquiries
       : activeTab === 'upcoming'
       ? upcomingEnquiries
       : doneEnquiries;
 
-  const handleWhatsApp = (enq: Enquiry) => {
+  const currentList = currentPartition.filter((e) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    const item = items.find((i) => i.id === e.item_id);
+    return (
+      e.contact_name.toLowerCase().includes(q) ||
+      (e.phone && e.phone.includes(q)) ||
+      (item && item.name.toLowerCase().includes(q))
+    );
+  });
+
+  const activeEnquiry =
+    enquiries.find((e) => e.id === selectedEnquiryId) || currentList[0] || enquiries[0];
+
+  const handleWhatsApp = (enq: Enquiry, customNote?: string) => {
     const rawPhone = (enq.phone || '').replace(/[^\d]/g, '');
     if (!rawPhone) {
       alert('No phone number recorded for this contact.');
@@ -51,7 +78,9 @@ export function FollowUpsScreen() {
     const normalizedPhone = rawPhone.length === 10 ? `91${rawPhone}` : rawPhone;
     const item = items.find((i) => i.id === enq.item_id);
     const greeting = language === 'hi' ? 'नमस्ते' : 'Namaste';
-    const msg = `${greeting} ${enq.contact_name} ji,\nRegarding your inquiry for ${enq.pieces_wanted} pcs of ${item?.name || 'goods'}.\nWe have stock ready for immediate delivery. Current rate is ₹${formatIndianNumber(item?.default_rate || 0)}/${item?.rate_unit === 'per_quintal' ? 'qtl' : 'bag'}.\nShould we book and dispatch today? - ${business.name}`;
+    const msg =
+      customNote ||
+      `${greeting} ${enq.contact_name} ji,\nRegarding your inquiry for ${enq.pieces_wanted} pcs of ${item?.name || 'goods'}.\nWe have stock ready for immediate delivery. Current rate is ₹${formatIndianNumber(item?.default_rate || 0)}/${item?.rate_unit === 'per_quintal' ? 'qtl' : 'bag'}.\nShould we book and dispatch today? - ${business.name}`;
 
     const url = `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
@@ -71,222 +100,353 @@ export function FollowUpsScreen() {
   };
 
   return (
-    <div className="pb-28 pt-2 space-y-4 animate-fade-in relative min-h-[85vh]">
-      {/* 1. Header */}
-      <div>
-        <h2 className="text-3xl font-black text-[#19221E] tracking-tight">
-          {t.followUps} · {t.followUpsHindi}
-        </h2>
-        <p className="text-xs font-semibold text-[#56645E] mt-0.5">
-          Buyers who asked on WhatsApp
-        </p>
-      </div>
-
-      {/* 2. Segmented Filter Tabs (Matching Screen 6) */}
-      <div className="grid grid-cols-3 gap-1 bg-[#F1EBE1] p-1 rounded-2xl">
-        <button
-          onClick={() => setActiveTab('today')}
-          className={`py-2 text-xs font-black rounded-xl transition-all ${
-            activeTab === 'today'
-              ? 'bg-[#184E3A] text-white shadow-xs'
-              : 'text-[#56645E] hover:text-[#19221E]'
-          }`}
-        >
-          {t.today} · {todayEnquiries.length}
-        </button>
-
-        <button
-          onClick={() => setActiveTab('upcoming')}
-          className={`py-2 text-xs font-black rounded-xl transition-all ${
-            activeTab === 'upcoming'
-              ? 'bg-[#184E3A] text-white shadow-xs'
-              : 'text-[#56645E] hover:text-[#19221E]'
-          }`}
-        >
-          {t.upcoming} · {upcomingEnquiries.length}
-        </button>
-
-        <button
-          onClick={() => setActiveTab('done')}
-          className={`py-2 text-xs font-black rounded-xl transition-all ${
-            activeTab === 'done'
-              ? 'bg-[#184E3A] text-white shadow-xs'
-              : 'text-[#56645E] hover:text-[#19221E]'
-          }`}
-        >
-          {t.done}
-        </button>
-      </div>
-
-      {/* 3. Enquiries Cards List (Matching Screen 6) */}
-      <div className="space-y-3">
-        {currentList.length === 0 ? (
-          <div className="bg-white p-8 rounded-3xl border border-[#E5DFD1] text-center space-y-2">
-            <p className="text-sm font-bold text-[#19221E]">
-              {activeTab === 'today'
-                ? 'No follow-ups due today!'
-                : activeTab === 'upcoming'
-                ? 'No upcoming inquiries scheduled.'
-                : 'No completed inquiries yet.'}
-            </p>
-            <p className="text-xs text-[#56645E]">
-              Tap &quot;+ Add enquiry&quot; to log buyers who messaged you on WhatsApp.
-            </p>
+    <div className="pb-28 lg:pb-12 pt-1 space-y-6 animate-fade-in relative min-h-[85vh]">
+      {/* 1. Header with Add Enquiry CTA */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-black uppercase tracking-wider text-[#C25E1A] bg-[#FCEFE7] px-2.5 py-0.5 rounded-full">
+              Khata &amp; Buyer Inquiries
+            </span>
           </div>
-        ) : (
-          currentList.map((enq) => {
-            const item = items.find((i) => i.id === enq.item_id);
-            const inStock = item?.pieces_in_stock || 0;
-            const piecesWanted = enq.pieces_wanted || 0;
-            const isShort = inStock < piecesWanted;
-            const isLate = enq.next_follow_up && enq.next_follow_up < todayStr;
+          <h2 className="text-2xl sm:text-3xl font-black text-[#19221E] tracking-tight mt-1">
+            {t.followUps} · {t.followUpsHindi}
+          </h2>
+          <p className="text-xs sm:text-sm font-semibold text-[#56645E] mt-0.5">
+            WhatsApp buyer follow-ups, price inquiries, and payment reminders
+          </p>
+        </div>
 
-            return (
-              <div
-                key={enq.id}
-                className="bg-white p-4 rounded-3xl border border-[#E5DFD1] shadow-xs space-y-3 relative"
-              >
-                {/* Top Row: Buyer Name & Urgency Badge */}
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-extrabold text-base text-[#19221E] leading-tight">
-                      {enq.contact_name}
-                    </h3>
-                    <p className="text-xs font-bold text-[#19221E] mt-1">
-                      Wants <span className="font-extrabold">{item?.name || 'Item'}</span> ·{' '}
-                      {piecesWanted} pcs
-                    </p>
-                  </div>
-
-                  {isLate && (
-                    <span className="px-2.5 py-0.5 rounded-full bg-[#C25E1A] text-white text-[11px] font-extrabold tracking-wide shrink-0">
-                      1 day late
-                    </span>
-                  )}
-                </div>
-
-                {/* Stock status indicator pill */}
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1 ${
-                      isShort
-                        ? 'bg-[#FCEFE7] text-[#C25E1A]'
-                        : 'bg-[#E7EFE9] text-[#184E3A]'
-                    }`}
-                  >
-                    {isShort ? (
-                      <>Only {inStock} in stock · {piecesWanted - inStock} short</>
-                    ) : (
-                      <>In stock: {inStock} pcs · enough</>
-                    )}
-                  </div>
-
-                  <span className="text-[11px] font-semibold text-[#8C9892]">
-                    {getAskedLabel(enq.created_at)}
-                  </span>
-                </div>
-
-                {/* Actions Row: WhatsApp, Call, Snooze, Done */}
-                <div className="flex items-center gap-2 pt-1">
-                  {/* Big Primary WhatsApp Button */}
-                  <button
-                    onClick={() => handleWhatsApp(enq)}
-                    className="flex-1 bg-[#184E3A] hover:bg-[#123E2E] active:scale-[0.98] text-white py-2.5 px-3 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all"
-                  >
-                    <MessageCircle className="w-4 h-4 fill-current" />
-                    <span>WhatsApp</span>
-                  </button>
-
-                  {/* Phone Call */}
-                  {enq.phone ? (
-                    <a
-                      href={`tel:${enq.phone}`}
-                      className="w-11 h-11 rounded-2xl bg-white border border-[#D9D2C3] hover:bg-[#F2ECE1] text-[#19221E] flex items-center justify-center transition-colors shadow-2xs shrink-0"
-                      title="Call"
-                    >
-                      <Phone className="w-4 h-4 text-[#56645E]" />
-                    </a>
-                  ) : (
-                    <button
-                      disabled
-                      className="w-11 h-11 rounded-2xl bg-[#F8F5EE] border border-[#E5DFD1] text-[#C7BFB1] flex items-center justify-center shrink-0 cursor-not-allowed"
-                    >
-                      <Phone className="w-4 h-4" />
-                    </button>
-                  )}
-
-                  {/* Snooze Picker */}
-                  <div className="relative">
-                    <button
-                      onClick={() =>
-                        setSnoozeTargetId(snoozeTargetId === enq.id ? null : enq.id)
-                      }
-                      className="w-11 h-11 rounded-2xl bg-white border border-[#D9D2C3] hover:bg-[#F2ECE1] text-[#19221E] flex items-center justify-center transition-colors shadow-2xs shrink-0"
-                      title="Snooze / Reschedule"
-                    >
-                      <Clock className="w-4 h-4 text-[#56645E]" />
-                    </button>
-
-                    {snoozeTargetId === enq.id && (
-                      <div className="absolute right-0 bottom-12 z-30 bg-white border border-[#D9D2C3] rounded-2xl p-2 shadow-xl space-y-1 w-32 animate-in zoom-in-95">
-                        <span className="text-[10px] font-bold text-[#56645E] block px-2 py-0.5 uppercase">
-                          Snooze to
-                        </span>
-                        <button
-                          onClick={() => {
-                            snoozeEnquiry(enq.id, 1);
-                            setSnoozeTargetId(null);
-                          }}
-                          className="w-full text-left p-1.5 rounded-xl text-xs font-bold text-[#19221E] hover:bg-[#E7EFE9] hover:text-[#184E3A]"
-                        >
-                          Tomorrow
-                        </button>
-                        <button
-                          onClick={() => {
-                            snoozeEnquiry(enq.id, 3);
-                            setSnoozeTargetId(null);
-                          }}
-                          className="w-full text-left p-1.5 rounded-xl text-xs font-bold text-[#19221E] hover:bg-[#E7EFE9] hover:text-[#184E3A]"
-                        >
-                          3 days
-                        </button>
-                        <button
-                          onClick={() => {
-                            snoozeEnquiry(enq.id, 7);
-                            setSnoozeTargetId(null);
-                          }}
-                          className="w-full text-left p-1.5 rounded-xl text-xs font-bold text-[#19221E] hover:bg-[#E7EFE9] hover:text-[#184E3A]"
-                        >
-                          Next week
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Mark Done Checkmark */}
-                  <button
-                    onClick={() => updateEnquiryStatus(enq.id, 'won')}
-                    className="w-11 h-11 rounded-2xl bg-white border border-[#D9D2C3] hover:bg-[#E7EFE9] hover:border-[#184E3A] text-[#19221E] hover:text-[#184E3A] flex items-center justify-center transition-colors shadow-2xs shrink-0"
-                    title="Mark Done / Won"
-                  >
-                    <Check className="w-4 h-4 stroke-[2.5]" />
-                  </button>
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-
-      {/* 4. Floating Action Button: + Add Enquiry (Terracotta Pill) */}
-      <div className="fixed bottom-20 right-4 z-40 max-w-md">
         <button
           onClick={() => setIsAddEnquiryOpen(true)}
-          className="bg-[#C25E1A] hover:bg-[#A84F14] active:scale-95 text-white px-5 py-3.5 rounded-full font-black text-sm tracking-wide shadow-lg flex items-center gap-2 transition-all"
+          className="px-4 py-2.5 bg-[#C25E1A] hover:bg-[#A84F14] text-white rounded-2xl text-xs font-black flex items-center gap-2 shadow-xs transition-all active:scale-95 self-start sm:self-auto"
         >
-          <Plus className="w-5 h-5 stroke-[3]" />
-          <span>{t.addEnquiry}</span>
+          <Plus className="w-4 h-4 stroke-[3]" />
+          <span>+ Log Buyer Enquiry</span>
         </button>
+      </div>
+
+      {/* 2. Filter Bar: Segmented Tabs & Search */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="grid grid-cols-3 gap-1 bg-[#F1EBE1] p-1 rounded-2xl w-full sm:w-auto">
+          <button
+            onClick={() => setActiveTab('today')}
+            className={`py-2 px-4 text-xs font-black rounded-xl transition-all ${
+              activeTab === 'today'
+                ? 'bg-[#184E3A] text-white shadow-xs'
+                : 'text-[#56645E] hover:text-[#19221E]'
+            }`}
+          >
+            {t.today} ({todayEnquiries.length})
+          </button>
+
+          <button
+            onClick={() => setActiveTab('upcoming')}
+            className={`py-2 px-4 text-xs font-black rounded-xl transition-all ${
+              activeTab === 'upcoming'
+                ? 'bg-[#184E3A] text-white shadow-xs'
+                : 'text-[#56645E] hover:text-[#19221E]'
+            }`}
+          >
+            {t.upcoming} ({upcomingEnquiries.length})
+          </button>
+
+          <button
+            onClick={() => setActiveTab('done')}
+            className={`py-2 px-4 text-xs font-black rounded-xl transition-all ${
+              activeTab === 'done'
+                ? 'bg-[#184E3A] text-white shadow-xs'
+                : 'text-[#56645E] hover:text-[#19221E]'
+            }`}
+          >
+            {t.done} ({doneEnquiries.length})
+          </button>
+        </div>
+
+        {/* Quick Search */}
+        <div className="relative w-full sm:w-64">
+          <Search className="w-4 h-4 text-[#7A8881] absolute left-3 top-3" />
+          <input
+            type="text"
+            placeholder="Search buyer or item..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-white border border-[#E5DFD1] rounded-2xl pl-9 pr-3 py-2 text-xs font-bold focus:outline-none focus:border-[#184E3A]"
+          />
+        </div>
+      </div>
+
+      {/* Responsive Grid: 1-col on mobile, 12-col on desktop */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        {/* ================= LEFT MAIN: ENQUIRY LIST (Col 7 on Desktop) ================= */}
+        <div className="lg:col-span-7 space-y-3.5">
+          {currentList.length === 0 ? (
+            <div className="bg-white p-8 rounded-3xl border border-[#E5DFD1] text-center space-y-2 shadow-xs">
+              <p className="text-sm font-bold text-[#19221E]">
+                {activeTab === 'today'
+                  ? 'No follow-ups due today!'
+                  : activeTab === 'upcoming'
+                  ? 'No upcoming inquiries scheduled.'
+                  : 'No completed inquiries yet.'}
+              </p>
+              <p className="text-xs text-[#56645E]">
+                Tap &quot;+ Log Buyer Enquiry&quot; above to add buyers who called or messaged you on WhatsApp.
+              </p>
+            </div>
+          ) : (
+            currentList.map((enq) => {
+              const item = items.find((i) => i.id === enq.item_id);
+              const inStock = item?.pieces_in_stock || 0;
+              const piecesWanted = enq.pieces_wanted || 0;
+              const isShort = inStock < piecesWanted;
+              const isLate = enq.next_follow_up && enq.next_follow_up < todayStr;
+              const isSelected = activeEnquiry?.id === enq.id;
+
+              return (
+                <div
+                  key={enq.id}
+                  onClick={() => setSelectedEnquiryId(enq.id)}
+                  className={`bg-white p-4 sm:p-5 rounded-3xl border transition-all cursor-pointer shadow-xs space-y-3 relative ${
+                    isSelected
+                      ? 'border-[#C25E1A] ring-2 ring-[#C25E1A]/20 bg-[#FDFAF4]'
+                      : 'border-[#E5DFD1] hover:border-[#D0C6B4]'
+                  }`}
+                >
+                  {/* Top Row: Buyer Name & Urgency Badge */}
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-black text-base text-[#19221E] leading-tight">
+                          {enq.contact_name}
+                        </h3>
+                        {isSelected && (
+                          <span className="hidden sm:inline-block w-2 h-2 rounded-full bg-[#C25E1A]" />
+                        )}
+                      </div>
+                      <p className="text-xs font-bold text-[#19221E] mt-1">
+                        Inquiry: <span className="font-extrabold text-[#184E3A]">{item?.name || 'Item'}</span> ·{' '}
+                        {piecesWanted} bags
+                      </p>
+                    </div>
+
+                    {isLate && (
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#C25E1A] text-white text-[11px] font-extrabold tracking-wide shrink-0">
+                        1 day late
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Stock status indicator pill */}
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1 ${
+                        isShort ? 'bg-[#FCEFE7] text-[#C25E1A]' : 'bg-[#E7EFE9] text-[#184E3A]'
+                      }`}
+                    >
+                      {isShort ? (
+                        <>Only {inStock} in stock · {piecesWanted - inStock} short</>
+                      ) : (
+                        <>In stock: {inStock} bags · Ready</>
+                      )}
+                    </div>
+
+                    <span className="text-[11px] font-semibold text-[#8C9892]">
+                      {getAskedLabel(enq.created_at)}
+                    </span>
+                  </div>
+
+                  {/* Actions Row: WhatsApp, Call, Snooze, Done */}
+                  <div className="flex items-center gap-2 pt-1 border-t border-[#F2ECE1]">
+                    {/* Primary WhatsApp Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleWhatsApp(enq);
+                      }}
+                      className="flex-1 bg-[#184E3A] hover:bg-[#123E2E] active:scale-[0.98] text-white py-2.5 px-3 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all"
+                    >
+                      <MessageCircle className="w-4 h-4 fill-current" />
+                      <span>WhatsApp Message</span>
+                    </button>
+
+                    {/* Phone Call */}
+                    {enq.phone ? (
+                      <a
+                        href={`tel:${enq.phone}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-10 h-10 rounded-2xl bg-[#F9F6F0] border border-[#D9D2C3] hover:bg-[#F2ECE1] text-[#19221E] flex items-center justify-center transition-colors shadow-2xs shrink-0"
+                        title="Call Buyer"
+                      >
+                        <Phone className="w-4 h-4 text-[#56645E]" />
+                      </a>
+                    ) : null}
+
+                    {/* Snooze Picker */}
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSnoozeTargetId(snoozeTargetId === enq.id ? null : enq.id);
+                        }}
+                        className="w-10 h-10 rounded-2xl bg-[#F9F6F0] border border-[#D9D2C3] hover:bg-[#F2ECE1] text-[#19221E] flex items-center justify-center transition-colors shadow-2xs shrink-0"
+                        title="Snooze"
+                      >
+                        <Clock className="w-4 h-4 text-[#56645E]" />
+                      </button>
+
+                      {snoozeTargetId === enq.id && (
+                        <div className="absolute right-0 bottom-12 z-30 bg-white border border-[#D9D2C3] rounded-2xl p-2 shadow-xl space-y-1 w-32 animate-in zoom-in-95">
+                          <span className="text-[10px] font-bold text-[#56645E] block px-2 py-0.5 uppercase">
+                            Snooze to
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              snoozeEnquiry(enq.id, 1);
+                              setSnoozeTargetId(null);
+                            }}
+                            className="w-full text-left p-1.5 rounded-xl text-xs font-bold text-[#19221E] hover:bg-[#E7EFE9] hover:text-[#184E3A]"
+                          >
+                            Tomorrow
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              snoozeEnquiry(enq.id, 3);
+                              setSnoozeTargetId(null);
+                            }}
+                            className="w-full text-left p-1.5 rounded-xl text-xs font-bold text-[#19221E] hover:bg-[#E7EFE9] hover:text-[#184E3A]"
+                          >
+                            3 days
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              snoozeEnquiry(enq.id, 7);
+                              setSnoozeTargetId(null);
+                            }}
+                            className="w-full text-left p-1.5 rounded-xl text-xs font-bold text-[#19221E] hover:bg-[#E7EFE9] hover:text-[#184E3A]"
+                          >
+                            Next week
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Mark Won / Checkmark */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateEnquiryStatus(enq.id, 'won');
+                      }}
+                      className="w-10 h-10 rounded-2xl bg-[#F9F6F0] border border-[#D9D2C3] hover:bg-[#E7EFE9] hover:border-[#184E3A] text-[#19221E] hover:text-[#184E3A] flex items-center justify-center transition-colors shadow-2xs shrink-0"
+                      title="Mark Won"
+                    >
+                      <Check className="w-4 h-4 stroke-[2.5]" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* ================= RIGHT COLUMN: WHATSAPP DRAWER & TEMPLATES (Col 5 on Desktop) ================= */}
+        <div className="lg:col-span-5 space-y-4 sticky top-6">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-2">
+              <MessageCircle className="w-4 h-4 text-[#184E3A]" />
+              <h4 className="font-extrabold text-sm text-[#19221E] uppercase tracking-wider">
+                Mandi Message Templates
+              </h4>
+            </div>
+            <span className="text-[11px] font-bold text-[#184E3A] bg-[#E7EFE9] px-2 py-0.5 rounded-full">
+              1-Click Send
+            </span>
+          </div>
+
+          {activeEnquiry ? (
+            <div className="bg-white p-5 rounded-3xl border border-[#E5DFD1] shadow-xs space-y-4">
+              <div className="flex justify-between items-start pb-3 border-b border-[#F2ECE1]">
+                <div>
+                  <h4 className="font-black text-base text-[#19221E]">{activeEnquiry.contact_name}</h4>
+                  <p className="text-xs text-[#56645E]">Ph: {activeEnquiry.phone || 'No phone'}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveView('bill-new')}
+                  className="px-3 py-1.5 bg-[#184E3A] text-white rounded-xl text-xs font-black hover:bg-[#123E2E]"
+                >
+                  Convert to Bill
+                </button>
+              </div>
+
+              {/* Template Options */}
+              <div className="space-y-2.5">
+                <p className="text-xs font-bold text-[#56645E]">Select WhatsApp message template:</p>
+
+                {/* Template 1: Stock Ready */}
+                <div
+                  onClick={() => {
+                    const item = items.find((i) => i.id === activeEnquiry.item_id);
+                    handleWhatsApp(
+                      activeEnquiry,
+                      `नमस्ते ${activeEnquiry.contact_name} जी,\nआपके द्वारा पूछे गए ${activeEnquiry.pieces_wanted} बोरी ${item?.name || 'माल'} का स्टॉक उपलब्ध है। आज का भाव ₹${formatIndianNumber(item?.default_rate || 0)}/${item?.rate_unit === 'per_quintal' ? 'क्विंटल' : 'बोरी'} है। क्या आज गाड़ी लोड करवा दें? - ${business.name}`
+                    );
+                  }}
+                  className="p-3 rounded-2xl bg-[#F9F6F0] hover:bg-[#F0ECE1] border border-[#E5DFD1] cursor-pointer transition-colors space-y-1"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-[#184E3A]">1. स्टॉक उपलब्ध व भाव कन्फर्मेशन</span>
+                    <Send className="w-3.5 h-3.5 text-[#184E3A]" />
+                  </div>
+                  <p className="text-[11px] text-[#56645E] line-clamp-2">
+                    नमस्ते ji, आपके द्वारा पूछे गए माल का स्टॉक उपलब्ध है। आज का भाव...
+                  </p>
+                </div>
+
+                {/* Template 2: Payment Reminder */}
+                <div
+                  onClick={() => {
+                    handleWhatsApp(
+                      activeEnquiry,
+                      `नमस्ते ${activeEnquiry.contact_name} जी,\n${business.name} से विनती है कि पुराने बिल का बकाया भुगतान आज करवा दें ताकि अगली गाड़ी बिना रुकावट भेजी जा सके। खाता विवरण: ${business.bank_name || 'SBI'} A/c ${business.bank_account || '39981029482'}। धन्यवाद!`
+                    );
+                  }}
+                  className="p-3 rounded-2xl bg-[#F9F6F0] hover:bg-[#F0ECE1] border border-[#E5DFD1] cursor-pointer transition-colors space-y-1"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-[#C25E1A]">2. खाता तगादा व भुगतान स्मरण</span>
+                    <Send className="w-3.5 h-3.5 text-[#C25E1A]" />
+                  </div>
+                  <p className="text-[11px] text-[#56645E] line-clamp-2">
+                    पुराने बिल का बकाया भुगतान आज करवा दें ताकि अगली गाड़ी बिना रुकावट भेजी जा सके...
+                  </p>
+                </div>
+              </div>
+
+              {/* Direct Open in WhatsApp Button */}
+              <button
+                type="button"
+                onClick={() => handleWhatsApp(activeEnquiry)}
+                className="w-full py-3 bg-[#184E3A] hover:bg-[#123E2E] text-white rounded-2xl font-black text-xs flex items-center justify-center gap-2 shadow-xs transition-colors"
+              >
+                <MessageCircle className="w-4 h-4 fill-current" />
+                <span>Open in WhatsApp</span>
+              </button>
+            </div>
+          ) : (
+            <div className="bg-white p-6 rounded-3xl border border-[#E5DFD1] text-center text-xs text-[#56645E]">
+              Select an inquiry on the left to see WhatsApp templates.
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Add Enquiry Bottom Sheet */}
