@@ -1,0 +1,62 @@
+/* src/app/globals.css */
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-mandi: #F8F5EE;
+    --card-surface: #FFFFFF;
+    --border-mandi: #E5DFD1;
+    --text-primary: #19221E;
+    --text-muted: #56645E;
+    --green-primary: #184E3A;
+    --green-hover: #123E2E;
+    --green-light: #E7EFE9;
+    --clay-accent: #C25E1A;
+    --clay-light: #FCEFE7;
+  }
+
+  body {
+    background-color: var(--bg-mandi);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Custom scrollbar for mobile feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D9D2C3;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #BCB4A3;
+}
+
+/* Print Styles for Screen 8 Kacha Mandi Invoice */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-page {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+}
