@@ -26,34 +26,34 @@ export function TopHeader() {
   const t = getT(language);
 
   return (
-    <header className="sticky top-0 z-40 bg-[#F8F5EE]/95 dark:bg-[#101613]/95 backdrop-blur-md border-b border-[#E5DFD1] dark:border-[#27362E] px-4 py-3 lg:hidden no-print transition-colors duration-200">
-      <div className="max-w-3xl mx-auto flex items-center justify-between">
+    <header className="sticky top-0 z-40 bg-[#F8F5EE]/95 dark:bg-[#101613]/95 backdrop-blur-md border-b border-[#E5DFD1] dark:border-[#27362E] px-3.5 sm:px-4 py-2.5 sm:py-3 lg:hidden no-print transition-colors duration-200">
+      <div className="max-w-3xl mx-auto flex items-center justify-between gap-2">
         {/* Left: Brand Badge & Name */}
         <button
           onClick={() => setActiveView('home')}
-          className="flex items-center gap-2.5 text-left focus:outline-none group"
+          className="flex items-center gap-2 sm:gap-2.5 text-left focus:outline-none group min-w-0"
         >
-          <div className="w-10 h-10 rounded-2xl bg-[#184E3A] flex items-center justify-center text-white font-black text-sm tracking-tight shadow-sm transition-transform group-hover:scale-105">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#184E3A] flex items-center justify-center text-white font-black text-xs sm:text-sm tracking-tight shadow-sm shrink-0 transition-transform group-hover:scale-105">
             RTC
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <h1 className="font-extrabold text-base text-[#19221E] dark:text-[#F0F4F2] leading-tight">
+              <h1 className="font-extrabold text-sm sm:text-base text-[#19221E] dark:text-[#F0F4F2] leading-tight truncate max-w-[120px] sm:max-w-none">
                 {business.name || 'RTC Mandi'}
               </h1>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
             </div>
-            <span className="text-[11px] font-semibold text-[#56645E] dark:text-[#8E9F97]">
+            <span className="text-[10px] sm:text-[11px] font-semibold text-[#56645E] dark:text-[#8E9F97] block truncate">
               {language === 'hi' ? 'अनाज व दलहन आढ़त' : 'Grain & Mandi Trader'}
             </span>
           </div>
         </button>
 
         {/* Right: Quick Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 shrink-0">
           <button
             onClick={() => setActiveView(activeView === 'bot' ? 'home' : 'bot')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
               activeView === 'bot'
                 ? 'bg-[#184E3A] text-white shadow-xs'
                 : 'bg-white dark:bg-[#18221D] text-[#184E3A] dark:text-emerald-400 border border-[#D9D2C3] dark:border-[#27362E] hover:bg-[#F2ECE1] dark:hover:bg-[#202C26]'

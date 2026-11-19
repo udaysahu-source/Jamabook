@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --font-sans: var(--font-sans), 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-hindi: var(--font-hindi), 'Noto Sans Devanagari', sans-serif;
+}
+
 @layer base {
   :root {
     --bg-mandi: #F8F5EE;
@@ -33,11 +38,16 @@
   body {
     background-color: var(--bg-mandi);
     color: var(--text-primary);
+    font-family: var(--font-sans), 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     transition: background-color 0.25s ease, color 0.25s ease;
   }
+}
+
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0.75rem));
 }
 
 @keyframes shimmer {

@@ -309,7 +309,7 @@ export function TelegramBotSimulator() {
       </div>
 
       {/* 3. Bottom Voice / Message Input Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E5DFD1] p-3 shadow-lg no-print">
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E5DFD1] p-3 pb-safe shadow-lg no-print">
         <div className="max-w-md mx-auto flex items-center gap-2">
           <input
             type="text"

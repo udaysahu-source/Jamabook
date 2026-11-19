@@ -515,9 +515,9 @@ export function NewBillScreen() {
                   </div>
 
                   {/* 3-Column Inputs: Pieces, Kg/Piece, Rate */}
-                  <div className="grid grid-cols-3 gap-2.5">
+                  <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="text-[11px] font-black uppercase text-[#56645E] block mb-1">
+                      <label className="text-[10px] sm:text-[11px] font-black uppercase text-[#56645E] block mb-1 text-center truncate" title={`${t.pieces} (Bags)`}>
                         {t.pieces} (Bags)
                       </label>
                       <input
@@ -530,12 +530,12 @@ export function NewBillScreen() {
                             e.target.value === '' ? '' : Math.max(1, parseInt(e.target.value) || 0)
                           )
                         }
-                        className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl px-3 py-2 text-center text-base font-black font-mono text-[#19221E] focus:outline-none focus:border-[#184E3A]"
+                        className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl px-2 sm:px-3 py-2 text-center text-sm sm:text-base font-black font-mono text-[#19221E] focus:outline-none focus:border-[#184E3A]"
                       />
                     </div>
 
                     <div>
-                      <label className="text-[11px] font-black uppercase text-[#56645E] block mb-1">
+                      <label className="text-[10px] sm:text-[11px] font-black uppercase text-[#56645E] block mb-1 text-center truncate" title={`${t.kgPerPiece} (Kg)`}>
                         {t.kgPerPiece} (Kg)
                       </label>
                       <input
@@ -548,12 +548,12 @@ export function NewBillScreen() {
                             e.target.value === '' ? '' : Math.max(0.1, parseFloat(e.target.value) || 0)
                           )
                         }
-                        className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl px-3 py-2 text-center text-base font-black font-mono text-[#19221E] focus:outline-none focus:border-[#184E3A]"
+                        className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl px-2 sm:px-3 py-2 text-center text-sm sm:text-base font-black font-mono text-[#19221E] focus:outline-none focus:border-[#184E3A]"
                       />
                     </div>
 
                     <div>
-                      <label className="text-[11px] font-black uppercase text-[#56645E] block mb-1">
+                      <label className="text-[10px] sm:text-[11px] font-black uppercase text-[#56645E] block mb-1 text-center truncate" title={`${t.rate} (₹)`}>
                         {t.rate} (₹)
                       </label>
                       <input
@@ -566,7 +566,7 @@ export function NewBillScreen() {
                             e.target.value === '' ? '' : Math.max(0, parseFloat(e.target.value) || 0)
                           )
                         }
-                        className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl px-3 py-2 text-center text-base font-black font-mono text-[#19221E] focus:outline-none focus:border-[#184E3A]"
+                        className="w-full bg-[#F9F6F0] border border-[#D9D2C3] rounded-2xl px-2 sm:px-3 py-2 text-center text-sm sm:text-base font-black font-mono text-[#19221E] focus:outline-none focus:border-[#184E3A]"
                       />
                     </div>
                   </div>
@@ -586,7 +586,7 @@ export function NewBillScreen() {
                           key={unit}
                           type="button"
                           onClick={() => updateLine(index, 'rate_unit', unit)}
-                          className={`py-1.5 text-xs font-bold rounded-xl transition-all ${
+                          className={`py-1.5 px-1 text-[11px] sm:text-xs font-bold rounded-xl transition-all truncate text-center ${
                             isActive
                               ? 'bg-[#184E3A] text-white shadow-xs font-black'
                               : 'text-[#56645E] hover:text-[#19221E]'
@@ -812,7 +812,7 @@ export function NewBillScreen() {
       </div>
 
       {/* Mobile Sticky Bottom Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#131B17]/95 backdrop-blur-md border-t border-[#E5DFD1] dark:border-[#27362E] px-4 py-3 shadow-lg lg:hidden no-print transition-colors duration-200">
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#131B17]/95 backdrop-blur-md border-t border-[#E5DFD1] dark:border-[#27362E] px-4 py-3 pb-safe shadow-lg lg:hidden no-print transition-colors duration-200">
         <div className="max-w-md mx-auto flex items-center justify-between gap-4">
           <div>
             <span className="text-[10px] font-black uppercase text-[#56645E] dark:text-[#8E9F97] block">

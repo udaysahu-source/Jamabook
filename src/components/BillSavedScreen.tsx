@@ -5,9 +5,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useJamabook } from '@/context/JamabookContext';
 import { getT } from '@/lib/translations';
 import { formatCurrency, formatIndianNumber, formatDate } from '@/lib/formatters';
-import { Check, MessageCircle, Download, Printer, ArrowLeft, AlertTriangle, X } from 'lucide-react';
+import { Check, MessageCircle, Download, Printer, ArrowLeft, AlertTriangle, X, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import html2canvas from 'html2canvas';
+import { downloadInvoicePDF } from '@/lib/pdfGenerator';
 
 export function BillSavedScreen() {
   const {
@@ -18,6 +19,7 @@ export function BillSavedScreen() {
     setSelectedInvoice,
     cancelInvoice,
     items,
+    parties,
     business,
   } = useJamabook();
   const t = getT(language);
@@ -63,6 +65,28 @@ export function BillSavedScreen() {
   const itemObj = items.find((i) => i.id === mainLine?.item_id);
   const currentStock = itemObj?.pieces_in_stock || 0;
   const previousStock = currentStock + (mainLine?.pieces || 0);
+
+  const buyerParty = parties?.find(
+    (p) => p.id === invoice.buyer_id || p.name?.toLowerCase() === invoice.buyer_name?.toLowerCase()
+  );
+
+  const handleDownloadPDF = () => {
+    if (isGeneratingPdf) return;
+    try {
+      setIsGeneratingPdf(true);
+      const success = downloadInvoicePDF(invoice, business, buyerParty);
+      if (!success) {
+        setSelectedInvoice(invoice);
+        setActiveView('invoice-view');
+      }
+    } catch (err) {
+      console.error('PDF export error:', err);
+      setSelectedInvoice(invoice);
+      setActiveView('invoice-view');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
 
   const handleShareWhatsApp = () => {
     const cleanDigits = (invoice.buyer_phone || '').replace(/[^\d]/g, '');
@@ -223,16 +247,36 @@ export function BillSavedScreen() {
 
       {/* 3. Actions Section */}
       <div className="space-y-2.5">
-        {/* WhatsApp Share Button */}
-        <button
-          onClick={handleShareWhatsApp}
-          className="w-full bg-[#184E3A] hover:bg-[#123E2E] active:scale-[0.98] text-white py-3.5 px-4 rounded-2xl font-extrabold text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
-        >
-          <MessageCircle className="w-5 h-5 fill-current" />
-          <span>{t.shareOnWhatsApp}</span>
-        </button>
+        {/* WhatsApp Share & Tally PDF Actions */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <button
+            onClick={handleShareWhatsApp}
+            className="w-full bg-[#184E3A] hover:bg-[#123E2E] active:scale-[0.98] text-white py-3.5 px-4 rounded-2xl font-extrabold text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
+          >
+            <MessageCircle className="w-5 h-5 fill-current" />
+            <span>{t.shareOnWhatsApp}</span>
+          </button>
 
-        {/* Save Image & Print */}
+          <button
+            onClick={handleDownloadPDF}
+            disabled={isGeneratingPdf}
+            className="w-full bg-black hover:bg-neutral-800 disabled:bg-neutral-500 active:scale-[0.98] text-white py-3.5 px-4 rounded-2xl font-extrabold text-sm flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer disabled:cursor-not-allowed"
+          >
+            {isGeneratingPdf ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Generating PDF...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-5 h-5" />
+                <span>{t.downloadTallyPdf}</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Save Image & View / Print */}
         <div className="grid grid-cols-2 gap-2.5">
           <button
             onClick={handleSaveImage}
@@ -248,7 +292,7 @@ export function BillSavedScreen() {
             className="w-full bg-[#E7EFE9] border border-[#184E3A]/20 hover:bg-[#D5E4D8] text-[#184E3A] py-3 px-3 rounded-2xl font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
           >
             <Printer className="w-4 h-4 text-[#184E3A]" />
-            <span>Tally Invoice &amp; PDF</span>
+            <span>Tally Invoice &amp; Print</span>
           </button>
         </div>
 

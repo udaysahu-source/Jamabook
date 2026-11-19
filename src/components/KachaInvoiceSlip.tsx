@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import { downloadInvoicePDF } from '@/lib/pdfGenerator';
 
 type TemplateMode = 'tally-invoice' | 'tally-ledger' | 'kacha-slip';
 
@@ -109,38 +110,71 @@ export function KachaInvoiceSlip() {
   };
 
   const handleDownloadPDF = async () => {
-    if (!printRef.current || isPdfExporting) return;
+    if (isPdfExporting) return;
     setIsPdfExporting(true);
     try {
-      const canvas = await html2canvas(printRef.current, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#FFFFFF',
-        logging: false,
-      });
+      if (templateMode === 'tally-invoice') {
+        // Fast vector PDF (crystal clear, ultra-lightweight, 100% reliable on phones & desktops)
+        const ok = downloadInvoicePDF(invoice, business, buyerParty);
+        if (!ok) {
+          throw new Error('Vector export fallback needed');
+        }
+      } else {
+        // Fallback for Statement of Accounts & Kacha Slip
+        if (!printRef.current) return;
+        const canvas = await html2canvas(printRef.current, {
+          scale: 1.5,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#FFFFFF',
+          logging: false,
+        });
 
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-      });
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4',
+        });
 
-      const pdfWidth = 210;
-      const pdfHeight = 297;
-      const margin = 8;
-      const contentWidth = pdfWidth - margin * 2;
-      const contentHeight = (canvas.height * contentWidth) / canvas.width;
+        const pdfWidth = 210;
+        const pdfHeight = 297;
+        const margin = 8;
+        const contentWidth = pdfWidth - margin * 2;
+        const contentHeight = (canvas.height * contentWidth) / canvas.width;
 
-      pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, Math.min(contentHeight, pdfHeight - margin * 2));
-      const filename =
-        templateMode === 'tally-ledger'
-          ? `Tally-Ledger-${invoice.buyer_name.replace(/\s+/g, '_')}.pdf`
-          : `Tax-Invoice-${invoice.bill_no}.pdf`;
-      pdf.save(filename);
+        pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, Math.min(contentHeight, pdfHeight - margin * 2));
+        const filename =
+          templateMode === 'tally-ledger'
+            ? `Tally-Ledger-${invoice.buyer_name.replace(/\s+/g, '_')}.pdf`
+            : `Kacha-Slip-${invoice.bill_no}.pdf`;
+
+        const blob = pdf.output('blob');
+        const blobUrl = URL.createObjectURL(blob);
+        const isIOS =
+          typeof navigator !== 'undefined' &&
+          /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+          !(window as any).MSStream;
+
+        if (isIOS) {
+          window.open(blobUrl, '_blank');
+        } else {
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = blobUrl;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(blobUrl);
+          }, 1500);
+        }
+      }
     } catch (err) {
       console.error('PDF export failed:', err);
-      alert('PDF generation failed. You can also click Print and select Save as PDF.');
+      // Fallback: trigger system print dialog (which has Save to PDF on all mobile & desktop OS)
+      window.print();
     } finally {
       setIsPdfExporting(false);
     }
@@ -191,63 +225,66 @@ export function KachaInvoiceSlip() {
   return (
     <div className="pb-28 pt-1 space-y-4 animate-fade-in font-['Arial',Helvetica,sans-serif]">
       {/* Top Action Bar (Hidden during print) */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 no-print">
-        <button
-          onClick={() => setActiveView('home')}
-          className="flex items-center gap-1.5 text-xs font-bold text-[#184E3A] bg-white border border-[#E5DFD1] px-3.5 py-2 rounded-2xl hover:bg-[#F2ECE1] transition-colors shadow-2xs self-start"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
-        </button>
-
-        {/* Template Switcher Tabs */}
-        <div className="flex bg-[#EFE9DC] p-1 rounded-2xl text-xs font-bold self-center">
+      <div className="space-y-3 no-print">
+        {/* Navigation & Template Switcher */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <button
-            type="button"
-            onClick={() => setTemplateMode('tally-invoice')}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl transition-all ${
-              templateMode === 'tally-invoice'
-                ? 'bg-[#184E3A] text-white shadow-xs'
-                : 'text-[#56645E] hover:text-[#19221E]'
-            }`}
+            onClick={() => setActiveView('home')}
+            className="flex items-center gap-1.5 text-xs font-bold text-[#184E3A] bg-white border border-[#E5DFD1] px-3.5 py-2 rounded-2xl hover:bg-[#F2ECE1] transition-colors shadow-2xs"
           >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Tally Invoice</span>
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back</span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => setTemplateMode('tally-ledger')}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl transition-all ${
-              templateMode === 'tally-ledger'
-                ? 'bg-[#184E3A] text-white shadow-xs'
-                : 'text-[#56645E] hover:text-[#19221E]'
-            }`}
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Sales Statement</span>
-          </button>
+          {/* Template Switcher Tabs */}
+          <div className="flex bg-[#EFE9DC] p-1 rounded-2xl text-xs font-bold overflow-x-auto max-w-full">
+            <button
+              type="button"
+              onClick={() => setTemplateMode('tally-invoice')}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl transition-all whitespace-nowrap ${
+                templateMode === 'tally-invoice'
+                  ? 'bg-[#184E3A] text-white shadow-xs'
+                  : 'text-[#56645E] hover:text-[#19221E]'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Tally Invoice</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setTemplateMode('kacha-slip')}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl transition-all ${
-              templateMode === 'kacha-slip'
-                ? 'bg-[#184E3A] text-white shadow-xs'
-                : 'text-[#56645E] hover:text-[#19221E]'
-            }`}
-          >
-            <Receipt className="w-3.5 h-3.5" />
-            <span>Kacha Slip</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setTemplateMode('tally-ledger')}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl transition-all whitespace-nowrap ${
+                templateMode === 'tally-ledger'
+                  ? 'bg-[#184E3A] text-white shadow-xs'
+                  : 'text-[#56645E] hover:text-[#19221E]'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Sales Statement</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setTemplateMode('kacha-slip')}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl transition-all whitespace-nowrap ${
+                templateMode === 'kacha-slip'
+                  ? 'bg-[#184E3A] text-white shadow-xs'
+                  : 'text-[#56645E] hover:text-[#19221E]'
+              }`}
+            >
+              <Receipt className="w-3.5 h-3.5" />
+              <span>Kacha Slip</span>
+            </button>
+          </div>
         </div>
 
-        {/* Action Buttons: PDF, Image, WhatsApp, Print */}
-        <div className="flex items-center gap-1.5 justify-end">
+        {/* Action Buttons: 2x2 Grid on Mobile, Flex on Desktop */}
+        <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-end gap-2">
           <button
             onClick={handleDownloadPDF}
             disabled={isPdfExporting}
-            className="flex items-center gap-1.5 text-xs font-bold text-white bg-black hover:bg-neutral-800 disabled:bg-neutral-400 px-3.5 py-2 rounded-2xl transition-all shadow-2xs cursor-pointer disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-1.5 text-xs font-bold text-white bg-black hover:bg-neutral-800 disabled:bg-neutral-400 px-3.5 py-2.5 rounded-2xl transition-all shadow-2xs cursor-pointer disabled:cursor-not-allowed"
             title="Download Tally Prime PDF"
           >
             {isPdfExporting ? (
@@ -264,19 +301,9 @@ export function KachaInvoiceSlip() {
           </button>
 
           <button
-            onClick={handleDownloadImage}
-            disabled={isExporting}
-            className="flex items-center gap-1 text-xs font-bold text-[#19221E] bg-white border border-[#D9D2C3] px-3 py-2 rounded-2xl hover:bg-[#F2ECE1] transition-colors shadow-2xs"
-            title="Download PNG Image"
-          >
-            <Download className="w-3.5 h-3.5 text-[#56645E]" />
-            <span className="hidden sm:inline">PNG</span>
-          </button>
-
-          <button
             onClick={handleWhatsApp}
             disabled={!buyerPhone}
-            className="flex items-center gap-1 text-xs font-bold text-white bg-[#184E3A] hover:bg-[#123E2E] disabled:bg-neutral-300 px-3.5 py-2 rounded-2xl transition-colors shadow-2xs disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-1.5 text-xs font-bold text-white bg-[#184E3A] hover:bg-[#123E2E] disabled:bg-neutral-300 px-3.5 py-2.5 rounded-2xl transition-colors shadow-2xs disabled:cursor-not-allowed"
           >
             <MessageCircle className="w-3.5 h-3.5 fill-current" />
             <span>WhatsApp</span>
@@ -284,10 +311,20 @@ export function KachaInvoiceSlip() {
 
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1 text-xs font-bold text-white bg-[#19221E] hover:bg-black px-3.5 py-2 rounded-2xl transition-colors shadow-2xs"
+            className="flex items-center justify-center gap-1.5 text-xs font-bold text-white bg-[#19221E] hover:bg-black px-3.5 py-2.5 rounded-2xl transition-colors shadow-2xs"
           >
             <Printer className="w-3.5 h-3.5" />
             <span>Print</span>
+          </button>
+
+          <button
+            onClick={handleDownloadImage}
+            disabled={isExporting}
+            className="flex items-center justify-center gap-1.5 text-xs font-bold text-[#19221E] bg-white border border-[#D9D2C3] px-3.5 py-2.5 rounded-2xl hover:bg-[#F2ECE1] transition-colors shadow-2xs"
+            title="Download PNG Image"
+          >
+            <Download className="w-3.5 h-3.5 text-[#56645E]" />
+            <span>PNG Image</span>
           </button>
         </div>
       </div>
@@ -296,11 +333,12 @@ export function KachaInvoiceSlip() {
       {/* TEMPLATE 1: TALLY-STYLE TAX INVOICE (MONOCHROME, ARIAL GRID)   */}
       {/* ============================================================== */}
       {templateMode === 'tally-invoice' && (
-        <div
-          ref={printRef}
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
-          className="bg-white p-4 sm:p-6 border border-black text-black shadow-md max-w-3xl mx-auto space-y-0 print-page text-[11px] leading-tight select-text"
-        >
+        <div className="w-full overflow-x-auto pb-2">
+          <div
+            ref={printRef}
+            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+            className="bg-white p-4 sm:p-6 border border-black text-black shadow-md max-w-3xl mx-auto space-y-0 print-page text-[11px] leading-tight select-text min-w-[580px] sm:min-w-0"
+          >
           {/* Top Header: Tax Invoice */}
           <div className="border-b border-black text-center py-1 font-bold tracking-wider text-xs uppercase bg-white">
             Tax Invoice
@@ -636,17 +674,19 @@ export function KachaInvoiceSlip() {
             This is a Computer Generated Invoice · SUBJECT TO JURISDICTION
           </div>
         </div>
+        </div>
       )}
 
       {/* ============================================================== */}
       {/* TEMPLATE 2: SALES STATEMENT / TALLY LEDGER                      */}
       {/* ============================================================== */}
       {templateMode === 'tally-ledger' && (
-        <div
-          ref={printRef}
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
-          className="bg-white p-4 sm:p-6 border border-black text-black shadow-md max-w-3xl mx-auto space-y-0 print-page text-[11px] leading-tight select-text"
-        >
+        <div className="w-full overflow-x-auto pb-2">
+          <div
+            ref={printRef}
+            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+            className="bg-white p-4 sm:p-6 border border-black text-black shadow-md max-w-3xl mx-auto space-y-0 print-page text-[11px] leading-tight select-text min-w-[580px] sm:min-w-0"
+          >
           <div className="border-b border-black text-center p-2 space-y-0.5">
             <h2 className="text-sm font-bold uppercase tracking-wide">
               {business.name}
@@ -755,17 +795,19 @@ export function KachaInvoiceSlip() {
             This is a Computer Generated Statement · Subject to Jurisdiction
           </div>
         </div>
+        </div>
       )}
 
       {/* ============================================================== */}
       {/* TEMPLATE 3: MANDI KACHA SLIP (SCREEN 8 ORIGINAL)               */}
       {/* ============================================================== */}
       {templateMode === 'kacha-slip' && (
-        <div
-          ref={printRef}
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
-          className="bg-white p-6 rounded-2xl border-2 border-black text-black font-sans shadow-md max-w-2xl mx-auto space-y-4 print-page select-text"
-        >
+        <div className="w-full overflow-x-auto pb-2">
+          <div
+            ref={printRef}
+            style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
+            className="bg-white p-6 rounded-2xl border-2 border-black text-black font-sans shadow-md max-w-2xl mx-auto space-y-4 print-page select-text min-w-[520px] sm:min-w-0"
+          >
           <div className="text-center space-y-1">
             <h1 className="text-3xl font-black tracking-widest uppercase">
               {business.name}
@@ -931,6 +973,7 @@ export function KachaInvoiceSlip() {
               </span>
             </div>
           </div>
+        </div>
         </div>
       )}
     </div>
